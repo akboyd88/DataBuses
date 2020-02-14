@@ -47,8 +47,11 @@ namespace Boyd.DataBuses.Factories
                             options.DataExchangeFormat, 
                             options.SupplementalSettings),
                         loggerFactory);
-                case DataBusType.WebSocket:
-                    return new WebSocketDataBus<T1, T2>(loggerFactory, options, SerializerFactory<T1>.Build(
+                case DataBusType.WebSocketClient:
+                    return new WebSocketDataBus<T1, T2>(
+                        loggerFactory, 
+                        options, 
+                        SerializerFactory<T1>.Build(
                             options.DataExchangeFormat, 
                             options.SupplementalSettings),
                         DeserializerFactory<T2>.Build(

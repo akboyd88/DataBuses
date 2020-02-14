@@ -23,6 +23,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         private int _messageBufferMaxSize;
         private ILogger _logger;
         private BlockingCollection<T2> _messageQueue;
+        private EventWaitHandle _openEvent;
 
         private volatile bool _isDisposed;
 
@@ -37,6 +38,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _wsSocketServerUrl = options.SupplementalSettings["url"];
             _wsSocketSubProtocol = options.SupplementalSettings["subProtocol"];
             _messageBufferMaxSize = int.Parse(options.SupplementalSettings["maxBufferedMessages"]);
+            _openEvent =new EventWaitHandle(false, EventResetMode.AutoReset);
             _messageQueue = new BlockingCollection<T2>(_messageBufferMaxSize);
 
 
@@ -73,18 +75,28 @@ namespace Boyd.DataBuses.Impl.Duplexes
         {
             if (!_isDisposed)
             {
+                BaseDispose();
                 _isDisposed = true;
                 _clientWebSocket.Abort();
                 _clientWebSocket.Dispose();
                 _messageQueue.Dispose();
-                BaseDispose();
+                _openEvent.Dispose();
+
             }
         }
 
-        protected override async Task SendData(T1 data, CancellationToken token)
+        protected override Task SendData(T1 data, CancellationToken token)
         {
-            var raw = _serializer.Serialize(data);
-            await _clientWebSocket.SendAsync(raw, WebSocketMessageType.Binary, true, token);
+            return Task.Run(async () =>
+            {
+                var raw = _serializer.Serialize(data);
+                if (_clientWebSocket.State != WebSocketState.Open)
+                {
+                    _openEvent.WaitOne();
+                }
+                await _clientWebSocket.SendAsync(raw, WebSocketMessageType.Binary, true, token);
+            }, token);
+
         }
 
         protected override Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token)
@@ -147,6 +159,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
                     _clientWebSocket.State != WebSocketState.Open)
                 {
                     await _clientWebSocket.ConnectAsync(new Uri(_wsSocketServerUrl), token);
+                    _openEvent.Set();
                 }
 
                 var bufferList = new List<Tuple<byte[], int>>();
@@ -155,7 +168,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 {
                     var buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
                     var result = await _clientWebSocket.ReceiveAsync(buffer, token);
-                    if (result.CloseStatus == WebSocketCloseStatus.Empty)
+                    if (result.CloseStatus == null)
                     {
                         if (result.EndOfMessage)
                         {

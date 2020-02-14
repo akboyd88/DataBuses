@@ -33,7 +33,7 @@ namespace Boyd.DataBuses.Models
         /// <summary>
         /// 
         /// </summary>
-        WebSocket,
+        WebSocketClient,
         /// <summary>
         /// 
         /// </summary>
