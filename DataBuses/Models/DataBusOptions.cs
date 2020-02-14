@@ -33,6 +33,10 @@ namespace Boyd.DataBuses.Models
         /// <summary>
         /// 
         /// </summary>
+        WebSocket,
+        /// <summary>
+        /// 
+        /// </summary>
         Serial,
         /// <summary>
         /// 

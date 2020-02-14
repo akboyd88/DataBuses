@@ -23,6 +23,16 @@ namespace Boyd.DataBuses.Impl.Deserializers
         {
             return JsonSerializer.Deserialize<T>(rawData.Span);
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rawData"></param>
+        /// <returns></returns>
+        public T Deserialize(byte[] rawData)
+        {
+            return JsonSerializer.Deserialize<T>(rawData);
+        }
 
         /// <summary>
         /// 

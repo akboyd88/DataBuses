@@ -14,6 +14,6 @@ namespace Boyd.DataBuses.Interfaces
         /// <param name="pObjIngress">Destination for the data source</param>
         /// <returns>Disposable object that can be used to break the coupling on dispose</returns>
         IDisposable CoupleEgressToIngress(IDataEgress<TData> pObjEgress, IDataIngress<TData> pObjIngress);
-        
+
     }
 }

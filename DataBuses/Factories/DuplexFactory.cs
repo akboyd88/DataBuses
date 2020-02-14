@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Boyd.DataBuses.Impl;
-using Boyd.DataBuses.Impl.Duplexes;
+﻿using Boyd.DataBuses.Impl.Duplexes;
 using Boyd.DataBuses.Interfaces;
 using Boyd.DataBuses.Models;
 using Microsoft.Extensions.Logging;
@@ -50,12 +47,19 @@ namespace Boyd.DataBuses.Factories
                             options.DataExchangeFormat, 
                             options.SupplementalSettings),
                         loggerFactory);
-                case DataBusType.Serial:
+                case DataBusType.WebSocket:
+                    return new WebSocketDataBus<T1, T2>(loggerFactory, options, SerializerFactory<T1>.Build(
+                            options.DataExchangeFormat, 
+                            options.SupplementalSettings),
+                        DeserializerFactory<T2>.Build(
+                            options.DataExchangeFormat, 
+                            options.SupplementalSettings));
                 case DataBusType.SignalR:
                     return new SignalRDataBus<T1, T2>(
                         options,
                         loggerFactory);
                 case DataBusType.Redis:
+                case DataBusType.Serial:
                 default:
                     return null;
             }

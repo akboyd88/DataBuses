@@ -24,6 +24,17 @@ namespace Boyd.DataBuses.Impl.Deserializers
         {
             return MessagePackSerializer.Deserialize<T>(rawData, MessagePackSerializerOptions.Standard);
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rawData"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public T Deserialize(byte[] rawData)
+        {
+            return MessagePackSerializer.Deserialize<T>(rawData, MessagePackSerializerOptions.Standard);
+        }
 
         /// <summary>
         /// 
