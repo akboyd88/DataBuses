@@ -17,14 +17,14 @@ namespace Boyd.DataBuses.Tests
         [Fact]
         public async Task VerifyWsEchoServer()
         {
-            var wssv = new WebSocketServer ("ws://localhost:7777");
+            var wssv = new WebSocketServer ("ws://127.0.0.1:30001");
             wssv.AddWebSocketService<WebSocketEchoServer> ("/echo");
             wssv.Start ();
 
             TaskCompletionSource<string> result = new TaskCompletionSource<string>();
             
             
-            using (var ws = new WebSocket ("ws://localhost:7777/echo"))
+            using (var ws = new WebSocket ("ws://127.0.0.1:30001/echo"))
             {
                 ws.OnMessage += (sender, e) =>
                 {
@@ -53,12 +53,12 @@ namespace Boyd.DataBuses.Tests
             dOptions.DataExchangeFormat = SerDerType.MessagePack;
             dOptions.DatabusType = DataBusType.WebSocketClient;
             dOptions.SupplementalSettings = new Dictionary<string, string>();
-            dOptions.SupplementalSettings["url"] = "ws://localhost:7778/echo";
+            dOptions.SupplementalSettings["url"] = "ws://127.0.0.1:30000/echo";
             dOptions.SupplementalSettings["subProtocol"] = "binary";
             dOptions.SupplementalSettings["maxBufferedMessages"] = "10";
             
             
-            var wssv = new WebSocketServer ("ws://localhost:7778");
+            var wssv = new WebSocketServer ("ws://127.0.0.1:30000");
             wssv.AddWebSocketService<WebSocketEchoServer> ("/echo");
             wssv.Start ();
 
