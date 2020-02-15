@@ -17,8 +17,6 @@ namespace Boyd.DataBuses.Factories
         /// </summary>
         /// <param name="options"></param>
         /// <param name="loggerFactory"></param>
-        /// <param name="pInProcessor"></param>
-        /// <param name="pOutProcessor"></param>
         /// <returns></returns>
         public static IDataDuplex<T1, T2> Build(
             DataBusOptions options, 

@@ -34,11 +34,17 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _tcpClient = new TcpClient(_tcpServerHostname, _tcpServerPort);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         protected override async Task SendData(T1 data, CancellationToken token)
         {
             ReadOnlyMemory<byte> outData = _serializer.Serialize(data);
-            _tcpClient.GetStream().Write(outData.Span);
-            _tcpClient.GetStream().Flush();
+            await _tcpClient.GetStream().WriteAsync(outData);
+            await _tcpClient.GetStream().FlushAsync();
         }
 
         /// <summary>

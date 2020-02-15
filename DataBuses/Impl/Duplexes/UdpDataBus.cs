@@ -62,6 +62,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="pObjTimeout"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         protected override async Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token)
@@ -81,7 +82,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <returns></returns>
         protected override Task CreateReadTask(CancellationToken token)
         {
-            return Task.Run(async () =>
+            return Task.Run(() =>
             {
                 try
                 {

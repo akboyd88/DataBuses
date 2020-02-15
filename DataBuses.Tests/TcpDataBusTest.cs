@@ -14,7 +14,7 @@ namespace Boyd.DataBuses.Tests
     public class TcpDataBusTest
     {
         [Fact]
-        public async Task EchoServerVerification()
+        public void EchoServerVerification()
         {
             var echoServer = new TcpEchoServer(25003);
             var tcpClient = new TcpClient("localhost", 25003);

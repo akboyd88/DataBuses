@@ -7,8 +7,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Boyd.DataBuses.Factories
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public static class EgressFactory<T>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="loggerFactory"></param>
+        /// <param name="pOutProcessor"></param>
+        /// <returns></returns>
         public static IDataEgress<T> Build(
             DataBusOptions options, 
             ILoggerFactory loggerFactory = null,

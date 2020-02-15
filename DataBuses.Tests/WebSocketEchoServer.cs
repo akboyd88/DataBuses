@@ -1,13 +1,8 @@
-﻿using WebSocketSharp;
-using WebSocketSharp.Server;
+﻿
 
 namespace Boyd.DataBuses.Tests
 {
-    public class WebSocketEchoServer : WebSocketBehavior
+    public class WebSocketEchoServer
     {
-        protected override void OnMessage (MessageEventArgs e)
-        {
-            Send (e.RawData);
-        }
     }
 }

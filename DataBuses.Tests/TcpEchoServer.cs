@@ -30,9 +30,9 @@ namespace Boyd.DataBuses.Tests
 
         }
 
-        private Task EchoClient(TcpClient client)
+        private void EchoClient(TcpClient client)
         {
-            return Task.Run(async () =>
+            Task.Run(async () =>
             {
                 while (client.Connected && _serve)
                 {

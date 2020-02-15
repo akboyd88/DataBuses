@@ -22,7 +22,7 @@ namespace Boyd.DataBuses.Impl.Egresses
 
         protected override Task CreateReadTask(CancellationToken token)
         {
-            return Task.Run(async () =>
+            return Task.Run(() =>
             {
                 while (!token.IsCancellationRequested && !this._readStopEvent.WaitOne(0, false))
                 {
@@ -44,11 +44,14 @@ namespace Boyd.DataBuses.Impl.Egresses
             return deserializedResult;
         }
 
+
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="dataBusOptions"></param>
+        /// <param name="deserializer"></param>
         /// <param name="loggerFactory"></param>
-        /// <param name="pFuncOutProcessor"></param>
+        /// <returns></returns>
         public UdpEgress(
             DataBusOptions dataBusOptions,
             IDeserializer<T> deserializer,
@@ -64,7 +67,7 @@ namespace Boyd.DataBuses.Impl.Egresses
         /// <summary>
         /// 
         /// </summary>
-        public void Dispose()
+        public new void Dispose()
         {
             if (!_isDisposed)
             {

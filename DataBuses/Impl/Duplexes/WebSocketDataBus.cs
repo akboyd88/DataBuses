@@ -77,7 +77,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
             {
                 BaseDispose();
                 _isDisposed = true;
-                _clientWebSocket.Abort();
+                CancellationTokenSource cancelSource = new CancellationTokenSource();
+                cancelSource.CancelAfter(250);
+                _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Gracefull Close", cancelSource.Token).Wait();
+                cancelSource.Dispose();
                 _clientWebSocket.Dispose();
                 _messageQueue.Dispose();
                 _openEvent.Dispose();
@@ -167,47 +170,55 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 while (!token.IsCancellationRequested && !_readStopEvent.WaitOne(0, false))
                 {
                     var buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
-                    var result = await _clientWebSocket.ReceiveAsync(buffer, token);
-                    if (result.CloseStatus == null)
+                    try
                     {
-                        if (result.EndOfMessage)
+                        var result = await _clientWebSocket.ReceiveAsync(buffer, token);
+                        if (result.CloseStatus == null)
                         {
-                            byte[] totalMessageBuffer;
-                            if (bufferList.Count == 0)
+                            if (result.EndOfMessage)
                             {
-                                totalMessageBuffer = buffer;
+                                byte[] totalMessageBuffer;
+                                if (bufferList.Count == 0)
+                                {
+                                    totalMessageBuffer = buffer;
+                                }
+                                else
+                                {
+                                    int totalSize = result.Count;
+                                    foreach (var t in bufferList)
+                                    {
+                                        totalSize += t.Item2;
+                                    }
+
+                                    totalMessageBuffer = ArrayPool<byte>.Shared.Rent(totalSize);
+                                    int copyOffset = 0;
+
+                                    foreach (var t in bufferList)
+                                    {
+                                        Buffer.BlockCopy(t.Item1, 0, totalMessageBuffer, copyOffset, t.Item2);
+                                        ArrayPool<byte>.Shared.Return(t.Item1);
+                                        copyOffset += t.Item2;
+                                    }
+                                    bufferList.Clear();
+                                    Buffer.BlockCopy(buffer, 0, totalMessageBuffer, copyOffset, buffer.Length);
+                                    ArrayPool<byte>.Shared.Return(buffer);
+
+                                }
+
+                                var serResult = _deserializer.Deserialize(buffer);
+                                AddToQueue(serResult);
+                                ArrayPool<byte>.Shared.Return(totalMessageBuffer);
                             }
                             else
                             {
-                                int totalSize = result.Count;
-                                foreach (var t in bufferList)
-                                {
-                                    totalSize += t.Item2;
-                                }
-
-                                totalMessageBuffer = ArrayPool<byte>.Shared.Rent(totalSize);
-                                int copyOffset = 0;
-
-                                foreach (var t in bufferList)
-                                {
-                                    Buffer.BlockCopy(t.Item1, 0, totalMessageBuffer, copyOffset, t.Item2);
-                                    ArrayPool<byte>.Shared.Return(t.Item1);
-                                    copyOffset += t.Item2;
-                                }
-                                bufferList.Clear();
-                                Buffer.BlockCopy(buffer, 0, totalMessageBuffer, copyOffset, buffer.Length);
-                                ArrayPool<byte>.Shared.Return(buffer);
-
+                                bufferList.Add(new Tuple<byte[], int>(buffer, result.Count));
                             }
-
-                            var serResult = _deserializer.Deserialize(buffer);
-                            AddToQueue(serResult);
-                            ArrayPool<byte>.Shared.Return(totalMessageBuffer);
                         }
-                        else
-                        {
-                            bufferList.Add(new Tuple<byte[], int>(buffer, result.Count));
-                        }
+                    }
+                    catch(Exception e)
+                    {
+                        ArrayPool<byte>.Shared.Return(buffer);
+                        Log(LogLevel.Error, e.Message);
                     }
                     _readStopEvent.WaitOne(TimeSpan.FromMilliseconds(50));
                 }

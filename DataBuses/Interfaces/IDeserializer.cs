@@ -11,16 +11,16 @@ namespace Boyd.DataBuses.Interfaces
     public interface IDeserializer<T>
     {
         /// <summary>
-        /// Deserialize an object in ReadOnlyMemory<byte> form 
+        /// Deserialize an object in ReadOnlyMemoryform 
         /// </summary>
-        /// <param name="rawData">raw data in ReadOnlyMemory<byte> form</param>
+        /// <param name="rawData">raw data in ReadOnlyMemory form</param>
         /// <returns>Deserialized object of specified type</returns>
         T Deserialize(ReadOnlyMemory<byte> rawData);
         
         /// <summary>
-        /// Deserialize an object in ReadOnlyMemory<byte> form 
+        /// Deserialize an object in ReadOnlyMemory form 
         /// </summary>
-        /// <param name="rawData">raw data in ReadOnlyMemory<byte> form</param>
+        /// <param name="rawData">raw data in ReadOnlyMemory form</param>
         /// <returns>Deserialized object of specified type</returns>
         T Deserialize(byte[] rawData);
 
@@ -28,6 +28,7 @@ namespace Boyd.DataBuses.Interfaces
         /// 
         /// </summary>
         /// <param name="stream"></param>
+        /// <param name="cancelToken">cancel token for cancelling the streaming read for deserialization</param>
         /// <returns></returns>
         Task<T> Deserialize(Stream stream, CancellationToken cancelToken);
     }
