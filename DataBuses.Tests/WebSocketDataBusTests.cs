@@ -1,53 +1,40 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 using Xunit;
 
 namespace Boyd.DataBuses.Tests
 {
     public class WebSocketDataBusTests
     {
-        /*
         [Fact]
         public async Task VerifyWsEchoServer()
         {
-            var wssv = new WebSocketServer ("ws://127.0.0.1:30001");
-            wssv.AddWebSocketService<WebSocketEchoServer> ("/echo");
-            wssv.Start ();
-
-            TaskCompletionSource<string> result = new TaskCompletionSource<string>();
+            var wssv = new WebSocketEchoServer("http://127.0.0.1:30001");
             
+            var client = new ClientWebSocket();
+            await client.ConnectAsync(new Uri("ws://127.0.0.1:30001/echo"), CancellationToken.None);
+
+            await client.SendAsync(Encoding.UTF8.GetBytes("test"), WebSocketMessageType.Binary, true,
+                CancellationToken.None);
+
+            var buffer = ArrayPool<byte>.Shared.Rent(4096);
+            var result = await client.ReceiveAsync(buffer, CancellationToken.None);
             
-            using (var ws = new WebSocket ("ws://127.0.0.1:30001/echo"))
-            {
-                ws.OnMessage += (sender, e) =>
-                {
-                    if(e.IsText && !e.IsPing)
-                        result.SetResult(e.Data);
-                    else if (e.IsBinary)
-                        result.SetResult(Encoding.UTF8.GetString(e.RawData));
-                };
+            var memory = new Memory<byte>(buffer, 0, result.Count);
+            var text = Encoding.UTF8.GetString(memory.Span);
+            Assert.Equal("test", text);
 
-                ws.Connect ();
-                ws.OnError += (sender, err) => throw (err.Exception);
-                ws.Send ("test");
+            await wssv.Stop();
+        }
 
-                var mess = await result.Task;
-                Assert.Equal("test", mess);
-                ws.Close(CloseStatusCode.Normal);
-            }
-            wssv.Stop();
-            
-
-        }*/
-
-        [Fact(Skip="Fix for linux")]
+        [Fact]
         public async Task DuplexE2ENoTransformTest()
         {
             var dOptions = new DataBusOptions();
@@ -58,10 +45,8 @@ namespace Boyd.DataBuses.Tests
             dOptions.SupplementalSettings["subProtocol"] = "binary";
             dOptions.SupplementalSettings["maxBufferedMessages"] = "10";
             
-            /*            
-            var wssv = new WebSocketServer ("ws://127.0.0.1:30000");
-            wssv.AddWebSocketService<WebSocketEchoServer> ("/echo");
-            wssv.Start ();*/
+            var wssv = new WebSocketEchoServer("http://127.0.0.1:30000");
+
 
             var duplexDatabus = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions);
             
@@ -94,8 +79,7 @@ namespace Boyd.DataBuses.Tests
             Assert.Equal(sourceMessage2.test2, recvMessage2.test2);
             Assert.Equal(sourceMessage2.test3, recvMessage2.test3);
             duplexDatabus.Dispose();
-           /* wssv.RemoveWebSocketService("/echo");
-            wssv.Stop();*/
+            await wssv.Stop();
 
         }
     }

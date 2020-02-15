@@ -79,7 +79,12 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 _isDisposed = true;
                 CancellationTokenSource cancelSource = new CancellationTokenSource();
                 cancelSource.CancelAfter(250);
-                _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Gracefull Close", cancelSource.Token).Wait();
+                if (_clientWebSocket.State == WebSocketState.Open ||
+                    _clientWebSocket.State == WebSocketState.CloseReceived ||
+                    _clientWebSocket.State == WebSocketState.CloseSent)
+                {
+                    _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Graceful Close", cancelSource.Token).Wait();
+                }
                 cancelSource.Dispose();
                 _clientWebSocket.Dispose();
                 _messageQueue.Dispose();
