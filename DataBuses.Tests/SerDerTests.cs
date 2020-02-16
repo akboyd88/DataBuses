@@ -9,16 +9,7 @@ using Xunit;
 
 namespace Boyd.DataBuses.Tests
 {
-    [MessagePackObject]
-    public class TestMessagePackObject
-    {
-        [Key(0)]
-        public int test1 { get; set; }
-        [Key(1)]
-        public string test2 { get; set;  }
-        [Key(2)]
-        public double test3 { get; set; }
-    }
+    
     public class SerDerTests
     {
 
@@ -26,16 +17,16 @@ namespace Boyd.DataBuses.Tests
         public async Task StreamMessagePackTest()
         {
             var serializer =
-                SerializerFactory<TestMessagePackObject>.Build(SerDerType.MessagePack,
+                SerializerFactory<TestMPackMessage>.Build(SerDerType.MessagePack,
                     new Dictionary<string, string>());
             Assert.NotNull(serializer);
 
             var deserializer =
-                DeserializerFactory<TestMessagePackObject>.Build(SerDerType.MessagePack,
+                DeserializerFactory<TestMPackMessage>.Build(SerDerType.MessagePack,
                     new Dictionary<string, string>());
             Assert.NotNull(deserializer);
             
-            var testSourceObj = new TestMessagePackObject();
+            var testSourceObj = new TestMPackMessage();
             testSourceObj.test1 = 5;
             testSourceObj.test2 = "test";
             testSourceObj.test3 = 5.0;
@@ -57,16 +48,16 @@ namespace Boyd.DataBuses.Tests
         public void SimpleMessagePackTest()
         {
             var serializer =
-                SerializerFactory<TestMessagePackObject>.Build(SerDerType.MessagePack,
+                SerializerFactory<TestMPackMessage>.Build(SerDerType.MessagePack,
                     new Dictionary<string, string>());
             Assert.NotNull(serializer);
 
             var deserializer =
-                DeserializerFactory<TestMessagePackObject>.Build(SerDerType.MessagePack,
+                DeserializerFactory<TestMPackMessage>.Build(SerDerType.MessagePack,
                     new Dictionary<string, string>());
             Assert.NotNull(deserializer);
             
-            var testSourceObj = new TestMessagePackObject();
+            var testSourceObj = new TestMPackMessage();
             testSourceObj.test1 = 5;
             testSourceObj.test2 = "test";
             testSourceObj.test3 = 5.0;
@@ -84,16 +75,16 @@ namespace Boyd.DataBuses.Tests
         public async Task StreamJsonTest()
         {
             var serializer =
-                SerializerFactory<TestMessagePackObject>.Build(SerDerType.Json,
+                SerializerFactory<TestMPackMessage>.Build(SerDerType.Json,
                     new Dictionary<string, string>());
             Assert.NotNull(serializer);
 
             var deserializer =
-                DeserializerFactory<TestMessagePackObject>.Build(SerDerType.Json,
+                DeserializerFactory<TestMPackMessage>.Build(SerDerType.Json,
                     new Dictionary<string, string>());
             Assert.NotNull(deserializer);
             
-            var testSourceObj = new TestMessagePackObject();
+            var testSourceObj = new TestMPackMessage();
             testSourceObj.test1 = 5;
             testSourceObj.test2 = "test";
             testSourceObj.test3 = 5.0;
@@ -115,16 +106,16 @@ namespace Boyd.DataBuses.Tests
         public void SimpleJsonTest()
         {
             var serializer =
-                SerializerFactory<TestMessagePackObject>.Build(SerDerType.Json,
+                SerializerFactory<TestMPackMessage>.Build(SerDerType.Json,
                     new Dictionary<string, string>());
             Assert.NotNull(serializer);
 
             var deserializer =
-                DeserializerFactory<TestMessagePackObject>.Build(SerDerType.Json,
+                DeserializerFactory<TestMPackMessage>.Build(SerDerType.Json,
                     new Dictionary<string, string>());
             Assert.NotNull(deserializer);
             
-            var testSourceObj = new TestMessagePackObject();
+            var testSourceObj = new TestMPackMessage();
             testSourceObj.test1 = 5;
             testSourceObj.test2 = "test";
             testSourceObj.test3 = 5.0;

@@ -3,7 +3,8 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Models;
-using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Boyd.DataBuses.Impl.Duplexes
@@ -25,10 +26,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// 
         /// </summary>
         private string _hubUrl;
-        /// <summary>
-        /// 
-        /// </summary>
-        private IHubProxy _hubProxy;
+
         /// <summary>
         /// 
         /// </summary>
@@ -66,16 +64,23 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 _logger = loggerFactory.CreateLogger<SignalRDataBus<T1, T2>>();
         
             _hubUrl = options.SupplementalSettings["hubUrl"];
-            _hubName = options.SupplementalSettings["hubName"];
             _hubInvokeRecipient = options.SupplementalSettings["hubInvokeRecipient"];
             _hubInvokeTarget = options.SupplementalSettings["hubInvokeTarget"];
             _messageBufferMaxSize = int.Parse(options.SupplementalSettings["maxBufferedMessages"]);
             _messageQueue = new BlockingCollection<T2>(_messageBufferMaxSize);
+
+            if (options.DataExchangeFormat == SerDerType.MessagePack)
+            {
+                throw new Exception("Message Pack Not Yet Supported for SignalR DataBus");
+            }
             
-            _hubConnection = new HubConnection(_hubUrl);
-            _hubProxy = _hubConnection.CreateHubProxy(_hubName);
-            _hubProxy.On<T2>(_hubInvokeRecipient, RecvData);
-            _hubConnection.Start();
+            
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl(new Uri(_hubUrl))
+                .AddJsonProtocol().Build();
+
+            _hubConnection.On<T2>(_hubInvokeRecipient, RecvData);
+            _hubConnection.StartAsync().Wait();
         }
 
         /// <summary>
@@ -83,8 +88,8 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// </summary>
         public override void Dispose()
         {
-            _hubConnection.Stop();
-            _hubConnection.Dispose();
+            _hubConnection.StopAsync().Wait();
+            _hubConnection.DisposeAsync().Wait();
         }
 
         /// <summary>
@@ -142,7 +147,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <returns></returns>
         protected override async Task SendData(T1 data, CancellationToken token)
         {
-            await _hubProxy.Invoke(_hubInvokeTarget, data);
+            await _hubConnection.InvokeAsync<T1>(_hubInvokeTarget, data, token);
         }
 
         /// <summary>
