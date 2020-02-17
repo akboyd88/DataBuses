@@ -43,14 +43,15 @@ namespace Boyd.DataBuses.Impl.Ingresses
             await _udpClient.SendAsync(serData.ToArray(), serData.Length, _remoteHost, _remotePort);
         }
 
-        public new void Dispose()
+        public override void Dispose()
         {
             if (!_isDisposed)
-            {
+            {               
+                BaseDispose();
                 _isDisposed = true;
                 _udpClient.Close();
                 _udpClient.Dispose();
-                base.Dispose();
+ 
             }
         }
         

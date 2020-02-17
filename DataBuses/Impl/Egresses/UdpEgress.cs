@@ -67,14 +67,14 @@ namespace Boyd.DataBuses.Impl.Egresses
         /// <summary>
         /// 
         /// </summary>
-        public new void Dispose()
+        public override void Dispose()
         {
             if (!_isDisposed)
             {
+                BaseDispose();
                 _isDisposed = true;
                 _udpClient.Close();
                 _udpClient.Dispose();
-                base.Dispose();
             }
         }
 

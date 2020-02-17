@@ -19,7 +19,7 @@ namespace Boyd.DataBuses.Impl.Ingresses
                 _logger = loggerFactory.CreateLogger<BaseIngress<T>>();
         }
         
-        public void Dispose()
+        public void BaseDispose()
         {
             if (!_isDisposed)
             {
@@ -35,6 +35,8 @@ namespace Boyd.DataBuses.Impl.Ingresses
             DataIngestCommittedEvt?.Invoke(pObjDataToIngest);
             
         }
+
+        public abstract void Dispose();
 
         protected abstract Task SendData(T data, CancellationToken token);
 

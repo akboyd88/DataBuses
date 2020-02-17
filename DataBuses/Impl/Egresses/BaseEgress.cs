@@ -35,7 +35,7 @@ namespace Boyd.DataBuses.Impl.Egresses
         /// Dispose/cleanup of resources
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        public void Dispose()
+        public void BaseDispose()
         {
             if (!_isDisposed)
             {
@@ -84,6 +84,8 @@ namespace Boyd.DataBuses.Impl.Egresses
         {
             get { return _readDataAvailableEvent; }
         }
+        public abstract void Dispose();
+
         protected abstract Task CreateReadTask(CancellationToken token);
         protected abstract Task<T> GetData(TimeSpan pObjTimeout, CancellationToken token);
 
