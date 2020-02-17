@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Interfaces;
+using Boyd.DataBuses.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Boyd.DataBuses.Impl.Duplexes
@@ -14,12 +16,17 @@ namespace Boyd.DataBuses.Impl.Duplexes
     internal abstract class BaseDataBus<T1, T2> : IDataDuplex<T1, T2>
     {
         private Task _readTask;
-        
         private CancellationTokenSource _readTaskCancelSource;
         protected readonly EventWaitHandle _readStopEvent;
         private readonly EventWaitHandle _readDataAvailableEvent;
         private volatile bool _isDisposed;
         private ILogger _logger;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        protected BlockingCollection<T2> _messageQueue;
+        protected int? _messageBufferMaxSize;
 
         /// <summary>
         /// Fired when data is available to be taken out of the egress
@@ -39,12 +46,20 @@ namespace Boyd.DataBuses.Impl.Duplexes
         {
             this.OnEgressDataAvailableEvt?.Invoke();
         }
+
+        public int MessagesInQueueCount
+        {
+            get { return _messageQueue.Count; }
+        }
         
         internal BaseDataBus(
+            DataBusOptions options,
             ILoggerFactory loggerFactory)
         {
             if(loggerFactory != null) 
                 _logger = loggerFactory.CreateLogger<BaseDataBus<T1, T2>>();
+            _messageBufferMaxSize = options.MaxBufferedMessages;
+            _messageQueue = _messageBufferMaxSize != null ? new BlockingCollection<T2>(_messageBufferMaxSize.Value) : new BlockingCollection<T2>();
             _readTaskCancelSource = new CancellationTokenSource();
             _readStopEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
             _readDataAvailableEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
@@ -64,8 +79,60 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 
             }
         }
+        
+        protected void Log(LogLevel level, string message)
+        {
+            _logger?.Log(level, message);
+        }
+        
+        protected void AddToQueue(T2 data)
+        {
+            var newMsg = true;
+            if (!_messageQueue.TryAdd(data))
+            {
+                //take something out to make room
+                if (!_messageQueue.TryTake(out var item))
+                {
+                    //lost incoming due to queue size limit, warn
+                    Log(LogLevel.Warning, "Failed to free up space in the message queue buffer, incoming message lost!");
+                    newMsg = false;
+                }
+                else
+                {
+                    if (!_messageQueue.TryAdd(data))
+                    {
+                        //lost incoming and lost oldest message
+                        Log(LogLevel.Critical, "Failed to add a message after freeing up space in message buffer, oldest and newest message lost!");
+                        newMsg = false;
+                    }
 
-        abstract public void Dispose();
+                }
+                
+            }
+
+            if (newMsg)
+            {
+                EgressDataAvailableWaitHandle.Set();
+                FireEgressDataAvailableEvt();
+            }
+        }
+        
+        protected Task<T2> TakeFromQueue(TimeSpan pObjTimeout, CancellationToken token)
+        {
+            return Task.Run(() =>
+            {
+                var extraSource = new CancellationTokenSource();
+                extraSource.CancelAfter(pObjTimeout);
+                var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, extraSource.Token);
+                var item = _messageQueue.Take(linkedSource.Token);
+                if (_messageQueue.Count == 0)
+                {
+                    EgressDataAvailableWaitHandle.Reset();
+                }
+                return item;
+            }, token);
+        }
+
 
         private void CleanUpReadTask()
         {
@@ -134,6 +201,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         }
 
 
+        public abstract void Dispose();
 
         protected abstract Task SendData(T1 data, CancellationToken token);
         protected abstract Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token);

@@ -22,7 +22,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         
         public SerialDataBus(
             ILoggerFactory loggerFactory, 
-            DataBusOptions options) : base(loggerFactory)
+            DataBusOptions options) : base(options, loggerFactory)
         {
             _serialPortName = options.SupplementalSettings["port"];
             _baudRate = int.Parse(options.SupplementalSettings["baudRate"]);
@@ -50,6 +50,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 _isDisposed = true;
                 _serialPort.Close();
                 _serialPort.Dispose();
+                _deserializer.Dispose();
                 BaseDispose();
             }
 

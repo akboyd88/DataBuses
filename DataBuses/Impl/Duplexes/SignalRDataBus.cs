@@ -42,14 +42,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <summary>
         /// 
         /// </summary>
-        private int _messageBufferMaxSize;
-        /// <summary>
-        /// 
-        /// </summary>
-        private BlockingCollection<T2> _messageQueue;
-        /// <summary>
-        /// 
-        /// </summary>
         private ILogger _logger;
 
         /// <summary>
@@ -57,7 +49,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// </summary>
         /// <param name="options"></param>
         /// <param name="loggerFactory"></param>
-        public SignalRDataBus(DataBusOptions options, ILoggerFactory loggerFactory) : base(loggerFactory)
+        public SignalRDataBus(DataBusOptions options, ILoggerFactory loggerFactory) : base(options, loggerFactory)
         {
 
             if (loggerFactory != null)
@@ -66,8 +58,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _hubUrl = options.SupplementalSettings["hubUrl"];
             _hubInvokeRecipient = options.SupplementalSettings["hubInvokeRecipient"];
             _hubInvokeTarget = options.SupplementalSettings["hubInvokeTarget"];
-            _messageBufferMaxSize = int.Parse(options.SupplementalSettings["maxBufferedMessages"]);
-            _messageQueue = new BlockingCollection<T2>(_messageBufferMaxSize);
 
             if (options.DataExchangeFormat == SerDerType.MessagePack)
             {
@@ -95,48 +85,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="level"></param>
-        /// <param name="message"></param>
-        private void Log(LogLevel level, string message)
-        {
-            _logger?.Log(level, message);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="data"></param>
         private void RecvData(T2 data)
         {
-            var newMsg = true;
-            if (!_messageQueue.TryAdd(data))
-            {
-                //take something out to make room
-                if (!_messageQueue.TryTake(out var item))
-                {
-                    //lost incoming due to queue size limit, warn
-                    Log(LogLevel.Warning, "Failed to free up space in the message queue buffer, incoming message lost!");
-                    newMsg = false;
-                }
-                else
-                {
-                    if (!_messageQueue.TryAdd(data))
-                    {
-                        //lost incoming and lost oldest message
-                        Log(LogLevel.Critical, "Failed to add a message after freeing up space in message buffer, oldest and newest message lost!");
-                        newMsg = false;
-                    }
-
-                }
-                
-            }
-
-            if (newMsg)
-            {
-                EgressDataAvailableWaitHandle.Set();
-                FireEgressDataAvailableEvt();
-            }
-            
+            AddToQueue(data);
         }
         
         /// <summary>
@@ -158,17 +110,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <returns></returns>
         protected override Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token)
         {
-            return Task.Run(() =>
-            {
-                var extraSource = new CancellationTokenSource(pObjTimeout);
-                var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, extraSource.Token);
-                var item = _messageQueue.Take(linkedSource.Token);
-                if (_messageQueue.Count == 0)
-                {
-                    EgressDataAvailableWaitHandle.Reset();
-                }
-                return item;
-            }, token);
+            return TakeFromQueue(pObjTimeout, token);
         }
 
         /// <summary>

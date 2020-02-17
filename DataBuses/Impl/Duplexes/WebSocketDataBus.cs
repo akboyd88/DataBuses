@@ -20,9 +20,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         private ISerializer<T1> _serializer;
         private IDeserializer<T2> _deserializer;
         private int _bufferSize = 4096;
-        private int _messageBufferMaxSize;
         private ILogger _logger;
-        private BlockingCollection<T2> _messageQueue;
         private EventWaitHandle _openEvent;
 
         private volatile bool _isDisposed;
@@ -31,15 +29,13 @@ namespace Boyd.DataBuses.Impl.Duplexes
             ILoggerFactory loggerFactory,
             DataBusOptions options,
             ISerializer<T1> serializer,
-            IDeserializer<T2> deserializer) : base(loggerFactory)
+            IDeserializer<T2> deserializer) : base(options,loggerFactory)
         {
             if (loggerFactory != null)
                 _logger = loggerFactory.CreateLogger<WebSocketDataBus<T1, T2>>();
             _wsSocketServerUrl = options.SupplementalSettings["url"];
             _wsSocketSubProtocol = options.SupplementalSettings["subProtocol"];
-            _messageBufferMaxSize = int.Parse(options.SupplementalSettings["maxBufferedMessages"]);
             _openEvent =new EventWaitHandle(false, EventResetMode.AutoReset);
-            _messageQueue = new BlockingCollection<T2>(_messageBufferMaxSize);
 
 
             _clientWebSocket = new ClientWebSocket();
@@ -89,6 +85,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 _clientWebSocket.Dispose();
                 _messageQueue.Dispose();
                 _openEvent.Dispose();
+                _deserializer.Dispose();
 
             }
         }
@@ -109,55 +106,12 @@ namespace Boyd.DataBuses.Impl.Duplexes
 
         protected override Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token)
         {
-            return Task.Run(() =>
-            {
-                var extraSource = new CancellationTokenSource(pObjTimeout);
-                var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(token, extraSource.Token);
-                var item = _messageQueue.Take(linkedSource.Token);
-                if (_messageQueue.Count == 0)
-                {
-                    EgressDataAvailableWaitHandle.Reset();
-                }
-                return item;
-            }, token);
+            return TakeFromQueue(pObjTimeout, token);
         }
 
-        private void Log(LogLevel level, string message)
-        {
-            _logger?.Log(level, message);
-        }
 
-        private void AddToQueue(T2 data)
-        {
-            var newMsg = true;
-            if (!_messageQueue.TryAdd(data))
-            {
-                //take something out to make room
-                if (!_messageQueue.TryTake(out var item))
-                {
-                    //lost incoming due to queue size limit, warn
-                    Log(LogLevel.Warning, "Failed to free up space in the message queue buffer, incoming message lost!");
-                    newMsg = false;
-                }
-                else
-                {
-                    if (!_messageQueue.TryAdd(data))
-                    {
-                        //lost incoming and lost oldest message
-                        Log(LogLevel.Critical, "Failed to add a message after freeing up space in message buffer, oldest and newest message lost!");
-                        newMsg = false;
-                    }
 
-                }
-                
-            }
-
-            if (newMsg)
-            {
-                EgressDataAvailableWaitHandle.Set();
-                FireEgressDataAvailableEvt();
-            }
-        }
+       
 
         protected override Task CreateReadTask(CancellationToken token)
         {

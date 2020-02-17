@@ -35,7 +35,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
             DataBusOptions dataBusOptions,
             ISerializer<T1> serializer,
             IDeserializer<T2> deserializer,
-            ILoggerFactory loggerFactory) : base(loggerFactory)
+            ILoggerFactory loggerFactory) : base(dataBusOptions, loggerFactory)
         {
             _serializer = serializer;
             _deserializer = deserializer;
@@ -118,6 +118,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 _isDisposed = true;
                 _udpClient.Close();
                 _udpClient.Dispose();
+                _deserializer.Dispose();
                 BaseDispose();
             }
         }

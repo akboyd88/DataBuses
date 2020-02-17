@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
@@ -44,6 +46,31 @@ namespace Boyd.DataBuses.Impl.Deserializers
         public async Task<T> Deserialize(Stream stream, CancellationToken cancelToken)
         {
             return await JsonSerializer.DeserializeAsync<T>(stream, null, cancelToken);
+        }
+
+        public IAsyncEnumerable<ReadOnlySequence<byte>> GetAsyncEnumerable(Stream stream, CancellationToken cancelToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int RemainingBytes(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasMore(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Deserialize(ReadOnlySequence<byte> bytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

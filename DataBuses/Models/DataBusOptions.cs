@@ -62,6 +62,8 @@ namespace Boyd.DataBuses.Models
         /// 
         /// </summary>
         public DataBusType DatabusType;
+
+        public int? MaxBufferedMessages;
         /// <summary>
         /// 
         /// </summary>

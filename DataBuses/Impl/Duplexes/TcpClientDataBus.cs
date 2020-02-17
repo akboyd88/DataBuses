@@ -23,7 +23,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
             DataBusOptions dataBusOptions,
             ISerializer<T1> serializer,
             IDeserializer<T2> deserializer,
-            ILoggerFactory loggerFactory) : base(loggerFactory)
+            ILoggerFactory loggerFactory) : base(dataBusOptions, loggerFactory)
         {
             _serializer = serializer;
             _deserializer = deserializer;
@@ -53,17 +53,9 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <param name="pObjTimeout"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected override async Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token)
+        protected override Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token)
         {
-            var stream = _tcpClient.GetStream();
-            var localTimeOutCancel = new CancellationTokenSource();
-            var joinedToken = CancellationTokenSource.CreateLinkedTokenSource(localTimeOutCancel.Token, token);
-            //localTimeOutCancel.CancelAfter(pObjTimeout);
-            var deserializedResult = await _deserializer.Deserialize(stream, joinedToken.Token);
-            localTimeOutCancel.Dispose();
-            EgressDataAvailableWaitHandle.Reset();
-            return deserializedResult;
-            
+            return TakeFromQueue(pObjTimeout, token);
         }
 
         protected override Task CreateReadTask(CancellationToken token)
@@ -77,12 +69,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
                         await _tcpClient.ConnectAsync(_tcpServerHostname, _tcpServerPort);
                     }
                     
-                    if (_tcpClient.Connected && 
-                        _tcpClient.Available > 0 && 
-                        !EgressDataAvailableWaitHandle.WaitOne(0, false))
+                    if (_tcpClient.Connected)
                     {
-                        EgressDataAvailableWaitHandle.Set();
-                        FireEgressDataAvailableEvt();
+                       var data = await  _deserializer.Deserialize(_tcpClient.GetStream(), token);
+                       AddToQueue(data);
                     }
 
                     _readStopEvent.WaitOne(TimeSpan.FromMilliseconds(50));
@@ -94,10 +84,11 @@ namespace Boyd.DataBuses.Impl.Duplexes
         {
             if (!_isDisposed)
             {
+                BaseDispose();
                 _isDisposed = true;
                 _tcpClient.Close();
                 _tcpClient.Dispose();
-                BaseDispose();
+                _deserializer.Dispose();
             }
         }
         
