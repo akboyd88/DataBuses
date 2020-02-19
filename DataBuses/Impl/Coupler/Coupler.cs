@@ -70,18 +70,20 @@ namespace Boyd.DataBuses.Impl.Coupler
     }
     
     /// <summary>
-    /// 
+    /// Couples an Egress to an Ingress so that data is forwarded from one data bus to the other, data busses
+    /// must use the same message type
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Coupler<T> : IDataCoupler<T>
     {
 
         /// <summary>
-        /// 
+        /// Creates an object that forwards messages from an egress to an ingress, returns an object that implements
+        /// IDisposable which when disposed stops the coupling but doesn't stop the ingres and egress
         /// </summary>
-        /// <param name="pObjEgress"></param>
-        /// <param name="pObjIngress"></param>
-        /// <param name="cancelToken"></param>
+        /// <param name="pObjEgress">Egress object</param>
+        /// <param name="pObjIngress">Ingress object</param>
+        /// <param name="cancelToken">cancellation token</param>
         /// <returns></returns>
         public  IDisposable CoupleEgressToIngress(IDataEgress<T> pObjEgress, IDataIngress<T> pObjIngress, CancellationToken cancelToken)
         {

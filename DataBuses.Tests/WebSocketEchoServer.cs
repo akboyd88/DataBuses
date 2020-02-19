@@ -68,11 +68,12 @@ namespace Boyd.DataBuses.Tests
 
         }
 
-        public async Task Stop()
+        public Task Stop()
         {
             stopCts.Cancel();
+            return Task.CompletedTask;
         }
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var webSocketOptions = new WebSocketOptions() 
             {

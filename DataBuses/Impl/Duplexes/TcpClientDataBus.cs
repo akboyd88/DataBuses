@@ -11,13 +11,13 @@ namespace Boyd.DataBuses.Impl.Duplexes
     internal class TcpClientDataBus<T1, T2> : BaseDataBus<T1, T2>
     {
 
-        private int _tcpServerPort;
-        private string _tcpServerHostname;
+        private readonly int _tcpServerPort;
+        private readonly string _tcpServerHostname;
         private ILogger _logger;
         private volatile bool _isDisposed;
-        private TcpClient _tcpClient;
-        private ISerializer<T1> _serializer;
-        private IDeserializer<T2> _deserializer;
+        private readonly TcpClient _tcpClient;
+        private readonly ISerializer<T1> _serializer;
+        private readonly IDeserializer<T2> _deserializer;
 
         public TcpClientDataBus(
             DataBusOptions dataBusOptions,
@@ -43,8 +43,8 @@ namespace Boyd.DataBuses.Impl.Duplexes
         protected override async Task SendData(T1 data, CancellationToken token)
         {
             ReadOnlyMemory<byte> outData = _serializer.Serialize(data);
-            await _tcpClient.GetStream().WriteAsync(outData);
-            await _tcpClient.GetStream().FlushAsync();
+            await _tcpClient.GetStream().WriteAsync(outData, token);
+            await _tcpClient.GetStream().FlushAsync(token);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
 
                     _readStopEvent.WaitOne(TimeSpan.FromMilliseconds(50));
                 }
-            });
+            }, token);
         }
 
         public override void Dispose()

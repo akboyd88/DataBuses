@@ -29,7 +29,7 @@ namespace Boyd.DataBuses.Tests
 
             var coupledObj = coupler.CoupleEgressToIngress(mockEgress.Object, mockIngress.Object, cts.Token);
             dataAvailable.Set();
-            await Task.Delay(TimeSpan.FromMilliseconds(250));
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
             mockIngress.Verify(s => s.PutData(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             coupledObj.Dispose();
         }

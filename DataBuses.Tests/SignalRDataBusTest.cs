@@ -27,13 +27,14 @@ namespace Boyd.DataBuses.Tests
                 .WithUrl(new Uri("http://127.0.0.1:30002/echo"))
                 .Build();
 
-            
+
             var taskCompletionSource = new TaskCompletionSource<byte[]>();
-            Task.Delay(TimeSpan.FromMilliseconds(1000)).ContinueWith(
+            var cancelCancelSource = new CancellationTokenSource();
+            var timeoutCancelTask = Task.Delay(TimeSpan.FromMilliseconds(1000),cancelCancelSource.Token).ContinueWith(
                 (a) =>
                 {
                     taskCompletionSource.SetCanceled();
-                });
+                },cancelCancelSource.Token);
             
             connection.On<byte[]>("echo", s =>
             {
@@ -47,6 +48,16 @@ namespace Boyd.DataBuses.Tests
             var result = await taskCompletionSource.Task;
             
             Assert.Equal(Encoding.UTF8.GetBytes("echo"), result);
+            if(!cancelCancelSource.IsCancellationRequested)
+                cancelCancelSource.Cancel();
+            try
+            {
+                await timeoutCancelTask;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+
             await connection.StopAsync(cts.Token);
 
             await echoServer.Stop();

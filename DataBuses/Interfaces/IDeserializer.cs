@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,28 +33,14 @@ namespace Boyd.DataBuses.Interfaces
         /// <returns></returns>
         Task<T> Deserialize(Stream stream, CancellationToken cancelToken);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="cancelToken"></param>
-        /// <returns></returns>
-        IAsyncEnumerable<ReadOnlySequence<byte>> GetAsyncEnumerable(Stream stream, CancellationToken cancelToken);
+
 
         /// <summary>
-        /// 
+        /// Deserialize bytes in a read only sequence to the matching generic type
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="bytes">read only sequence of bytes, this is provided as a convenience to reduce casting/marshalleing
+        /// from different forms of byte sequences when converting to a strongly typed object</param>
         /// <returns></returns>
-        int RemainingBytes(Stream stream);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        bool HasMore(Stream stream);
-
         T Deserialize(ReadOnlySequence<byte> bytes);
     }
 }

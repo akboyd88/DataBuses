@@ -10,20 +10,24 @@ namespace Boyd.DataBuses.Impl.Duplexes
 {
     internal class SerialDataBus<T1, T2> : BaseDataBus<T1, T2>
     {
-        private string _serialPortName;
-        private SerialPort _serialPort;
-        private int _baudRate;
-        private int _dataBits;
-        private Parity _parity;
-        private StopBits _stopBit;
-        private ISerializer<T1> _serializer;
-        private IDeserializer<T2> _deserializer;
+        private readonly string _serialPortName;
+        private readonly SerialPort _serialPort;
+        private readonly int _baudRate;
+        private readonly int _dataBits;
+        private readonly Parity _parity;
+        private readonly StopBits _stopBit;
+        private readonly ISerializer<T1> _serializer;
+        private readonly IDeserializer<T2> _deserializer;
         private volatile bool _isDisposed;
         
         public SerialDataBus(
             ILoggerFactory loggerFactory, 
+            ISerializer<T1> pSerializer,
+            IDeserializer<T2> pDeserializer,
             DataBusOptions options) : base(options, loggerFactory)
         {
+            _deserializer = pDeserializer;
+            _serializer = pSerializer;
             _serialPortName = options.SupplementalSettings["port"];
             _baudRate = int.Parse(options.SupplementalSettings["baudRate"]);
             _dataBits = int.Parse(options.SupplementalSettings["dataBits"]);
@@ -58,22 +62,22 @@ namespace Boyd.DataBuses.Impl.Duplexes
 
         protected override Task SendData(T1 data, CancellationToken token)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 var raw = _serializer.Serialize(data);
-                _serialPort.Write(raw.ToArray(), 0, raw.Length);
-            });
+                await _serialPort.BaseStream.WriteAsync(raw, token);
+            }, token);
 
         }
 
         protected override Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return TakeFromQueue(pObjTimeout, token);
         }
 
         protected override Task CreateReadTask(CancellationToken token)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 if (!_serialPort.IsOpen)
                 {
@@ -84,12 +88,13 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 {
                     if (_serialPort.BytesToRead > 0)
                     {
-
+                        var data = await  _deserializer.Deserialize(_serialPort.BaseStream, token);
+                        AddToQueue(data);
                     }
                     _readStopEvent.WaitOne(TimeSpan.FromMilliseconds(50));
                 }
 
-            });
+            }, token);
         }
     }
 }

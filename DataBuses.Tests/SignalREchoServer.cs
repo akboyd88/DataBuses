@@ -57,9 +57,10 @@ namespace Boyd.DataBuses.Tests
                 .AddJsonProtocol();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseSignalR((builder => builder.MapHub<EchoHub>("/echo")));
+            app.UseRouting();
+            app.UseEndpoints(builder => builder.MapHub<EchoHub>("/echo"));
         }
     }
     

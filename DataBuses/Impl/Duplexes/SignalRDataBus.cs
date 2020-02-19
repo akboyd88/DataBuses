@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Models;
@@ -35,10 +34,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// 
         /// </summary>
         private string _hubInvokeTarget;
-        /// <summary>
-        /// 
-        /// </summary>
-        private string _hubName;
+
         /// <summary>
         /// 
         /// </summary>
