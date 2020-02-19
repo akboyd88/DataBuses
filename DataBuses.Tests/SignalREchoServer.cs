@@ -44,11 +44,9 @@ namespace Boyd.DataBuses.Tests
     
     public class SignalREchoServerApp
     {
-        private IConfiguration config;
 
         public SignalREchoServerApp(IConfiguration pConfig)
         {
-            config = pConfig;
         }
 
         public void ConfigureServices(IServiceCollection services)

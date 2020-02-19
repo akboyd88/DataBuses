@@ -20,7 +20,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
         private ISerializer<T1> _serializer;
         private IDeserializer<T2> _deserializer;
         private int _bufferSize = 4096;
-        private ILogger _logger;
         private EventWaitHandle _openEvent;
 
         private volatile bool _isDisposed;
@@ -31,8 +30,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
             ISerializer<T1> serializer,
             IDeserializer<T2> deserializer) : base(options,loggerFactory)
         {
-            if (loggerFactory != null)
-                _logger = loggerFactory.CreateLogger<WebSocketDataBus<T1, T2>>();
+
             _wsSocketServerUrl = options.SupplementalSettings["url"];
             _wsSocketSubProtocol = options.SupplementalSettings["subProtocol"];
             _openEvent =new EventWaitHandle(false, EventResetMode.AutoReset);

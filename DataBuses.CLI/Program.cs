@@ -6,7 +6,8 @@ namespace DataBuses.CLI
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            //TODO add CLI interface
+            //Console.WriteLine("Hello World!");
         }
     }
 }

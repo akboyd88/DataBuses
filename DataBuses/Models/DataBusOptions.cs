@@ -62,12 +62,12 @@ namespace Boyd.DataBuses.Models
         /// The data exchange format this data bus should use, this is used for the serializer and deserializer
         /// creation step
         /// </summary>
-        public SerDerType DataExchangeFormat;
+        public SerDerType DataExchangeFormat { get; set;}
         /// <summary>
         /// The data bus type to use, this is used in the factory to determine the underlying type/implementation
         /// that should be instantiated
         /// </summary>
-        public DataBusType DatabusType;
+        public DataBusType DatabusType { get; set; }
 
         /// <summary>
         /// Set the maximum number of messages that should be allowed to be buffered by the
@@ -76,11 +76,11 @@ namespace Boyd.DataBuses.Models
         /// Currently if the use of the databus doesn't pop items out of the buffer fast enough and a bound is set for the max bufferred messages,
         /// messages will be lost but if this occurs it will be logged.
         /// </summary>
-        public int? MaxBufferedMessages;
+        public int? MaxBufferedMessages { get; set; }
         /// <summary>
         /// Supplemental setting dictionary that is used for custom settings that are specific to a certain data bus type and not common/shared
         /// across data busses.
         /// </summary>
-        public IDictionary<string, string> SupplementalSettings;
+        public IDictionary<string, string> SupplementalSettings { get; set; }
     }
 }

@@ -41,6 +41,9 @@ namespace Boyd.DataBuses.Impl.Egresses
             {
                 _isDisposed = true;
                 CleanUpReadTask();
+                _readDataAvailableEvent.Dispose();
+                _readStopEvent.Dispose();
+                _readTaskCancelSource.Dispose();
                 
             }
         }
@@ -62,6 +65,11 @@ namespace Boyd.DataBuses.Impl.Egresses
 
                 _readTask = null;
             }
+        }
+        
+        protected void Log(LogLevel level, string message)
+        {
+            _logger?.Log(level, message);
         }
         
         /// <summary>

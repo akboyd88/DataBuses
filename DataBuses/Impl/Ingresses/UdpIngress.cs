@@ -10,7 +10,6 @@ namespace Boyd.DataBuses.Impl.Ingresses
 {
     internal class UdpIngress<T> : BaseIngress<T>
     {
-        private ILogger _logger;
         private int _remotePort;
         private string _remoteHost;
         private UdpClient _udpClient;
@@ -31,8 +30,6 @@ namespace Boyd.DataBuses.Impl.Ingresses
             _serializer = serializer;
             _remoteHost = dataBusOptions.SupplementalSettings["remoteHost"];
             _remotePort = int.Parse(dataBusOptions.SupplementalSettings["remotePort"]);
-            if(loggerFactory != null)
-                _logger = loggerFactory.CreateLogger<UdpIngress<T>>();
             _udpClient = new UdpClient();
         }
         

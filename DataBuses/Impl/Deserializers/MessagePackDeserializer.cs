@@ -10,6 +10,19 @@ using MessagePack;
 namespace Boyd.DataBuses.Impl.Deserializers
 {
     /// <summary>
+    /// Exception when deserializing a message pack message
+    /// </summary>
+    public class MPackDeserializeException : Exception
+    {
+        /// <summary>
+        ///
+        /// </summary>
+        public MPackDeserializeException(string message) : base(message)
+        {
+
+        }
+    }
+    /// <summary>
     /// A message pack deserializer that uses the MessagePack-CSharp library to deserialize raw data
     /// to C# generic types
     /// </summary>
@@ -67,7 +80,7 @@ namespace Boyd.DataBuses.Impl.Deserializers
             }
             
 
-            throw new Exception("Failed to deserialize message pack object from stream");
+            throw new MPackDeserializeException("Failed to deserialize message pack object from stream");
         }
 
         /// <summary>

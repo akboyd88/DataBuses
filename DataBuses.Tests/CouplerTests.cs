@@ -27,7 +27,7 @@ namespace Boyd.DataBuses.Tests
             mockIngress.Setup(s => s.PutData(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask).Verifiable();
 
-            var coupledObj = coupler.CoupleEgressToIngress(mockEgress.Object, mockIngress.Object, cts.Token);
+            var coupledObj = coupler.CoupleEgressToIngress(mockEgress.Object, mockIngress.Object, null, cts.Token);
             dataAvailable.Set();
             await Task.Delay(TimeSpan.FromMilliseconds(500));
             mockIngress.Verify(s => s.PutData(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);

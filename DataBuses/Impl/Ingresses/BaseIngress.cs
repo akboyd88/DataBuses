@@ -36,6 +36,11 @@ namespace Boyd.DataBuses.Impl.Ingresses
             
         }
 
+        public void Log(LogLevel level, string message)
+        {
+            _logger?.Log(level, message);
+        }
+
         public abstract void Dispose();
 
         protected abstract Task SendData(T data, CancellationToken token);

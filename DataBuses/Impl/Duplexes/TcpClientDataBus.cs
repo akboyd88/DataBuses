@@ -13,7 +13,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
 
         private readonly int _tcpServerPort;
         private readonly string _tcpServerHostname;
-        private ILogger _logger;
         private volatile bool _isDisposed;
         private readonly TcpClient _tcpClient;
         private readonly ISerializer<T1> _serializer;
@@ -29,8 +28,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _deserializer = deserializer;
             _tcpServerHostname = dataBusOptions.SupplementalSettings["hostname"];
             _tcpServerPort = int.Parse(dataBusOptions.SupplementalSettings["port"]);
-            if(loggerFactory != null)
-                _logger = loggerFactory.CreateLogger<UdpDataBus<T1, T2>>();
             _tcpClient = new TcpClient(_tcpServerHostname, _tcpServerPort);
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO.Pipelines;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Boyd.DataBuses.Tests
 {
-    public class TcpEchoServer
+    public class TcpEchoServer : IDisposable
     {
         private int _listenPort;
         private TcpListener _listener;
@@ -17,6 +16,7 @@ namespace Boyd.DataBuses.Tests
         private CancellationTokenSource _cancellationTokenSource;
         private IList<TcpClient> _clients;
         private volatile bool _serve;
+        private volatile bool _isDisposed;
 
         public TcpEchoServer(int listenPort)
         {
@@ -91,6 +91,16 @@ namespace Boyd.DataBuses.Tests
             if (!result)
             {
                 _cancellationTokenSource.Cancel();
+            }
+            _cancellationTokenSource.Dispose();
+        }
+
+        public void Dispose()
+        {
+            if(!_isDisposed)
+            {
+                _isDisposed = true;
+                Close();
             }
         }
     }

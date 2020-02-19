@@ -33,14 +33,13 @@ namespace Boyd.DataBuses.Tests
         }
     }
 
-    class WebSocketEchoServerApp
+    class WebSocketEchoServerApp : IDisposable
     {
-        private IConfiguration config;
         private CancellationTokenSource stopCts;
+        private volatile bool _isDisposed;
         
         public WebSocketEchoServerApp(IConfiguration pConfig)
         {
-            config = pConfig;
             stopCts = new CancellationTokenSource();
         }
         
@@ -102,6 +101,15 @@ namespace Boyd.DataBuses.Tests
                 }
 
             });
+        }
+
+        public void Dispose()
+        {
+            if(!_isDisposed)
+            {
+                _isDisposed = true;
+                stopCts.Dispose();
+            }
         }
     }
 }

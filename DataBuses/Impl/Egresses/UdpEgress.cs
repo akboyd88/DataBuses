@@ -11,7 +11,6 @@ namespace Boyd.DataBuses.Impl.Egresses
     internal class UdpEgress<T> : BaseEgress<T>
     {
         private IDeserializer<T> _deserializer;
-        private ILogger _logger;
         private UdpClient _udpClient;
         private int _receivePort;
         private volatile bool _isDisposed;
@@ -59,8 +58,6 @@ namespace Boyd.DataBuses.Impl.Egresses
         {
             _deserializer = deserializer;
             _receivePort = int.Parse(dataBusOptions.SupplementalSettings["receivePort"]);
-            if(loggerFactory != null)
-                _logger = loggerFactory.CreateLogger<UdpEgress<T>>();
             _udpClient = new UdpClient(_receivePort);
         }
 

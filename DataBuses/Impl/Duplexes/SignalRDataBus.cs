@@ -9,6 +9,17 @@ using Microsoft.Extensions.Logging;
 namespace Boyd.DataBuses.Impl.Duplexes
 {
     
+    /// <summary>
+    /// </summary>
+    public class SignalRDataBusException : Exception
+    {
+        /// <summary>
+        /// </summary>
+        public SignalRDataBusException(string message) : base(message)
+        {
+
+        }
+    }
     
     /// <summary>
     /// 
@@ -35,10 +46,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// </summary>
         private string _hubInvokeTarget;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private ILogger _logger;
 
         /// <summary>
         /// 
@@ -48,16 +55,13 @@ namespace Boyd.DataBuses.Impl.Duplexes
         public SignalRDataBus(DataBusOptions options, ILoggerFactory loggerFactory) : base(options, loggerFactory)
         {
 
-            if (loggerFactory != null)
-                _logger = loggerFactory.CreateLogger<SignalRDataBus<T1, T2>>();
-        
             _hubUrl = options.SupplementalSettings["hubUrl"];
             _hubInvokeRecipient = options.SupplementalSettings["hubInvokeRecipient"];
             _hubInvokeTarget = options.SupplementalSettings["hubInvokeTarget"];
 
             if (options.DataExchangeFormat == SerDerType.MessagePack)
             {
-                throw new Exception("Message Pack Not Yet Supported for SignalR DataBus");
+                throw new SignalRDataBusException("Message Pack Not Yet Supported for SignalR DataBus");
             }
             
             

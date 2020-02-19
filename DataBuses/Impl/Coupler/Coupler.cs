@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Boyd.DataBuses.Interfaces;
 
 namespace Boyd.DataBuses.Impl.Coupler
@@ -15,15 +16,26 @@ namespace Boyd.DataBuses.Impl.Coupler
         
         private CancellationToken _cancel;
         private CancellationTokenSource _taskCancel;
+        private readonly ILogger _logger;
 
-        public Coupling(IDataEgress<T> pObjEgress, IDataIngress<T> pObjIngress, CancellationToken cancellationToken)
+        public Coupling(
+            IDataEgress<T> pObjEgress, 
+            IDataIngress<T> pObjIngress,
+            ILogger pLogger,
+            CancellationToken cancellationToken)
         {
+            _logger = pLogger;
             _egress = pObjEgress;
             _ingress = pObjIngress;
             _stopEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
             _cancel = cancellationToken;
             _taskCancel = new CancellationTokenSource();
             _copyTask = CreateCopyTask();
+        }
+
+        private void Log(LogLevel level, string message)
+        {
+            _logger?.Log(level, message);
         }
 
         private Task CreateCopyTask()
@@ -49,7 +61,7 @@ namespace Boyd.DataBuses.Impl.Coupler
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        Log(LogLevel.Error, "Error in coupler copy task: " + e.Message);
                     }
 
                 }
@@ -83,11 +95,16 @@ namespace Boyd.DataBuses.Impl.Coupler
         /// </summary>
         /// <param name="pObjEgress">Egress object</param>
         /// <param name="pObjIngress">Ingress object</param>
+        /// <param name="pLogger">Logger</param>
         /// <param name="cancelToken">cancellation token</param>
         /// <returns></returns>
-        public  IDisposable CoupleEgressToIngress(IDataEgress<T> pObjEgress, IDataIngress<T> pObjIngress, CancellationToken cancelToken)
+        public  IDisposable CoupleEgressToIngress(
+            IDataEgress<T> pObjEgress, 
+            IDataIngress<T> pObjIngress, 
+            ILogger pLogger,
+            CancellationToken cancelToken)
         {
-            return new Coupling<T>(pObjEgress, pObjIngress, cancelToken);
+            return new Coupling<T>(pObjEgress, pObjIngress, pLogger, cancelToken);
         }
     }
 }
