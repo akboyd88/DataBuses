@@ -31,7 +31,7 @@ namespace Boyd.DataBuses.Impl.Ingresses
         {
             DataIngestedEvt?.Invoke(pObjDataToIngest);
 
-            await SendData(pObjDataToIngest, pCancelToken);
+            await SendData(pObjDataToIngest, pCancelToken).ConfigureAwait(false);
             DataIngestCommittedEvt?.Invoke(pObjDataToIngest);
             
         }

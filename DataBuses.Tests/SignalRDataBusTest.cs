@@ -45,14 +45,14 @@ namespace Boyd.DataBuses.Tests
 
             
             await connection.InvokeAsync<string>("echo", Encoding.UTF8.GetBytes("echo"),cts.Token);
-            var result = await taskCompletionSource.Task;
+            var result = await taskCompletionSource.Task.ConfigureAwait(false);
             
             Assert.Equal(Encoding.UTF8.GetBytes("echo"), result);
             if(!cancelCancelSource.IsCancellationRequested)
                 cancelCancelSource.Cancel();
             try
             {
-                await timeoutCancelTask;
+                await timeoutCancelTask.ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

@@ -83,7 +83,7 @@ namespace Boyd.DataBuses.Impl.Egresses
 
         public async Task<T> TakeData(TimeSpan pObjTimeout, CancellationToken pCancelToken)
         {
-            return await GetData(pObjTimeout, pCancelToken);
+            return await GetData(pObjTimeout, pCancelToken).ConfigureAwait(false);
         }
 
         public event EgressDataAvailableEvt OnEgressDataAvailableEvt;

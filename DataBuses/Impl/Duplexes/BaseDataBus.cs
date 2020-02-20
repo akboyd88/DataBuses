@@ -177,7 +177,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         public async Task PutData(T1 pObjDataToIngest, CancellationToken pCancelToken)
         {
             DataIngestedEvt?.Invoke(pObjDataToIngest);
-            await SendData(pObjDataToIngest, pCancelToken);
+            await SendData(pObjDataToIngest, pCancelToken).ConfigureAwait(false);
             DataIngestCommittedEvt?.Invoke(pObjDataToIngest);
 
             
@@ -202,7 +202,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <returns></returns>
         public async Task<T2> TakeData(TimeSpan pObjTimeout, CancellationToken pCancelToken)
         {
-            return  await GetData(pObjTimeout, pCancelToken);
+            return  await GetData(pObjTimeout, pCancelToken).ConfigureAwait(false);
         }
 
         protected abstract Task SendData(T1 data, CancellationToken token);
