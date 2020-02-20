@@ -25,7 +25,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// 
         /// </summary>
         protected BlockingCollection<T2> _messageQueue;
-        private int? _messageBufferMaxSize;
 
         /// <summary>
         /// Fired when data is available to be taken out of the egress
@@ -52,10 +51,12 @@ namespace Boyd.DataBuses.Impl.Duplexes
             DataBusOptions options,
             ILoggerFactory loggerFactory)
         {
-            if(loggerFactory != null) 
+            if (loggerFactory != null)
+            {
                 _logger = loggerFactory.CreateLogger<BaseDataBus<T1, T2>>();
-            _messageBufferMaxSize = options.MaxBufferedMessages;
-            _messageQueue = _messageBufferMaxSize != null ? new BlockingCollection<T2>(_messageBufferMaxSize.Value) : new BlockingCollection<T2>();
+            }
+
+            _messageQueue = options.MaxBufferedMessages != null ? new BlockingCollection<T2>(options.MaxBufferedMessages.Value) : new BlockingCollection<T2>();
             _readTaskCancelSource = new CancellationTokenSource();
             _readStopEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
             EgressDataAvailableWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);

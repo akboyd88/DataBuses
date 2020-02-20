@@ -11,7 +11,7 @@ namespace Boyd.DataBuses.Tests
 {
     public class SignalREchoServer
     {
-        private IWebHost host;
+        private readonly IWebHost host;
         public SignalREchoServer(string bindUrl)
         {
             host = new WebHostBuilder()

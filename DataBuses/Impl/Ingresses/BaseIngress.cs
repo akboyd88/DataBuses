@@ -15,8 +15,10 @@ namespace Boyd.DataBuses.Impl.Ingresses
 
         protected BaseIngress(ILoggerFactory loggerFactory)
         {
-            if(loggerFactory != null) 
+            if (loggerFactory != null)
+            {
                 _logger = loggerFactory.CreateLogger<BaseIngress<T>>();
+            }
         }
         
         protected void BaseDispose()

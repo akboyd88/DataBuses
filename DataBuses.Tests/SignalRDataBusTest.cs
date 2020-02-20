@@ -48,8 +48,11 @@ namespace Boyd.DataBuses.Tests
             var result = await taskCompletionSource.Task.ConfigureAwait(false);
             
             Assert.Equal(Encoding.UTF8.GetBytes("echo"), result);
-            if(!cancelCancelSource.IsCancellationRequested)
+            if (!cancelCancelSource.IsCancellationRequested)
+            {
                 cancelCancelSource.Cancel();
+            }
+
             try
             {
                 await timeoutCancelTask.ConfigureAwait(false);

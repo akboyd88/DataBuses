@@ -10,12 +10,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
 {
     internal class SerialDataBus<T1, T2> : BaseDataBus<T1, T2>
     {
-        private readonly string _serialPortName;
         private readonly SerialPort _serialPort;
-        private readonly int _baudRate;
-        private readonly int _dataBits;
-        private readonly Parity _parity;
-        private readonly StopBits _stopBit;
         private readonly ISerializer<T1> _serializer;
         private readonly IDeserializer<T2> _deserializer;
         private volatile bool _isDisposed;
@@ -28,23 +23,13 @@ namespace Boyd.DataBuses.Impl.Duplexes
         {
             _deserializer = pDeserializer;
             _serializer = pSerializer;
-            _serialPortName = options.SupplementalSettings["port"];
-            _baudRate = int.Parse(options.SupplementalSettings["baudRate"]);
-            _dataBits = int.Parse(options.SupplementalSettings["dataBits"]);
-            
-            Enum.TryParse(options.SupplementalSettings["parity"], out _parity);
-            Enum.TryParse(options.SupplementalSettings["stopBits"], out _stopBit);
-            
+
             _serialPort = new SerialPort(
-                _serialPortName, 
-                _baudRate, 
-                _parity, 
-                _dataBits, 
-                _stopBit);
-            
-            
-            
-            
+                options.SupplementalSettings["port"], 
+                int.Parse(options.SupplementalSettings["baudRate"]), 
+                Enum.Parse<Parity>(options.SupplementalSettings["parity"]), 
+                int.Parse(options.SupplementalSettings["dataBits"]), 
+                Enum.Parse<StopBits>(options.SupplementalSettings["stopBits"]));
         }
 
         protected override void Dispose(bool disposing)

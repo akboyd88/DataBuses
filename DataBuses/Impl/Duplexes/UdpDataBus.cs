@@ -40,8 +40,11 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _deserializer = deserializer;
             _remoteHost = dataBusOptions.SupplementalSettings["remoteHost"];
             _remotePort = int.Parse(dataBusOptions.SupplementalSettings["remotePort"]);
-            if(loggerFactory != null)
+            if (loggerFactory != null)
+            {
                 _logger = loggerFactory.CreateLogger<UdpDataBus<T1, T2>>();
+            }
+
             _udpClient = new UdpClient(int.Parse(dataBusOptions.SupplementalSettings["receivePort"]));
         }
         
