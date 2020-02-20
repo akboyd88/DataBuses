@@ -47,17 +47,20 @@ namespace Boyd.DataBuses.Impl.Duplexes
             
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
+            if (_isDisposed)
+                return; 
+      
+            if (disposing) {
                 _isDisposed = true;
                 _serialPort.Close();
                 _serialPort.Dispose();
                 _deserializer.Dispose();
-                BaseDispose();
             }
 
+            _isDisposed = true;
+            base.Dispose(disposing);
         }
 
         protected override Task SendData(T1 data, CancellationToken token)

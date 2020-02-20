@@ -77,16 +77,19 @@ namespace Boyd.DataBuses.Impl.Duplexes
             }, token);
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
-                BaseDispose();
-                _isDisposed = true;
+            if (_isDisposed)
+                return; 
+      
+            base.Dispose(disposing);
+
+            if (disposing) {
                 _tcpClient.Close();
                 _tcpClient.Dispose();
                 _deserializer.Dispose();
             }
+            _isDisposed = true;
         }
         
     }

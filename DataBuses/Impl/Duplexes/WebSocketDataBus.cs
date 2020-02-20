@@ -65,12 +65,14 @@ namespace Boyd.DataBuses.Impl.Duplexes
             }
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
-                BaseDispose();
-                _isDisposed = true;
+            if (_isDisposed)
+                return; 
+      
+            base.Dispose(disposing);
+            
+            if (disposing) {
                 CancellationTokenSource cancelSource = new CancellationTokenSource();
                 cancelSource.CancelAfter(250);
                 if (_clientWebSocket.State == WebSocketState.Open ||
@@ -84,8 +86,9 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 _messageQueue.Dispose();
                 _openEvent.Dispose();
                 _deserializer.Dispose();
-
             }
+            _isDisposed = true;
+            
         }
 
         protected override Task SendData(T1 data, CancellationToken token)

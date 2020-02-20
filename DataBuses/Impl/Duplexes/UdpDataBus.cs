@@ -106,21 +106,18 @@ namespace Boyd.DataBuses.Impl.Duplexes
             });
         }
 
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
-                _isDisposed = true;
+            if (_isDisposed)
+                return; 
+      
+            if (disposing) {
                 _udpClient.Close();
                 _udpClient.Dispose();
                 _deserializer.Dispose();
-                BaseDispose();
             }
+            _isDisposed = true;
+            base.Dispose(disposing);
         }
 
         ~UdpDataBus()

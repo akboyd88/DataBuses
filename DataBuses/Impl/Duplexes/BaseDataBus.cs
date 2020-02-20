@@ -64,20 +64,23 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _readStopEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
             _readDataAvailableEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         }
-        
-        
-        /// <summary>
-        /// Dispose/cleanup of resources
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        protected void BaseDispose()
+
+        public void Dispose()
+        { 
+            Dispose(true);
+            GC.SuppressFinalize(this);           
+        }
+   
+        protected virtual void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
-                _isDisposed = true;
+            if (_isDisposed)
+                return; 
+      
+            if (disposing) {
                 CleanUpReadTask();
-                
             }
+      
+            _isDisposed = true;
         }
         
         protected void Log(LogLevel level, string message)
@@ -199,9 +202,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
         {
             return  await GetData(pObjTimeout, pCancelToken);
         }
-
-
-        public abstract void Dispose();
 
         protected abstract Task SendData(T1 data, CancellationToken token);
         protected abstract Task<T2> GetData(TimeSpan pObjTimeout, CancellationToken token);

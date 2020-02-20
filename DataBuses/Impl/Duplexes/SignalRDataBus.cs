@@ -46,6 +46,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// </summary>
         private string _hubInvokeTarget;
 
+        private volatile bool _isDisposed;
 
         /// <summary>
         /// 
@@ -72,14 +73,20 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _hubConnection.On<T2>(_hubInvokeRecipient, RecvData);
             _hubConnection.StartAsync().Wait();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public override void Dispose()
+        
+        
+        protected override void Dispose(bool disposing)
         {
-            _hubConnection.StopAsync().Wait();
-            _hubConnection.DisposeAsync().Wait();
+            if (_isDisposed)
+                return; 
+      
+            if (disposing) {
+                _hubConnection.StopAsync().Wait();
+                _hubConnection.DisposeAsync().Wait();
+            }
+            
+            _isDisposed = true;
+            base.Dispose(disposing);
         }
 
         /// <summary>
