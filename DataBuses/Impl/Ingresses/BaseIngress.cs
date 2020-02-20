@@ -10,7 +10,7 @@ namespace Boyd.DataBuses.Impl.Ingresses
     {
         public event DataIngestedEvt<T> DataIngestedEvt;
         public event DataIngestCommitted DataIngestCommittedEvt;
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private volatile bool _isDisposed;
 
         protected BaseIngress(ILoggerFactory loggerFactory)
@@ -19,7 +19,7 @@ namespace Boyd.DataBuses.Impl.Ingresses
                 _logger = loggerFactory.CreateLogger<BaseIngress<T>>();
         }
         
-        public void BaseDispose()
+        protected void BaseDispose()
         {
             if (!_isDisposed)
             {

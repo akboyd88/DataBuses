@@ -15,7 +15,7 @@ namespace Boyd.DataBuses.Tests
 {
     public class WebSocketEchoServer
     {
-        private IWebHost host;
+        private readonly IWebHost host;
         public WebSocketEchoServer(string bindUrl)
         {
             host = new WebHostBuilder()
@@ -35,8 +35,8 @@ namespace Boyd.DataBuses.Tests
 
     class WebSocketEchoServerApp : IDisposable
     {
-        private CancellationTokenSource stopCts;
-        private volatile bool _isDisposed;
+        private readonly CancellationTokenSource stopCts;
+        private  volatile bool _isDisposed;
         
         public WebSocketEchoServerApp(IConfiguration pConfig)
         {

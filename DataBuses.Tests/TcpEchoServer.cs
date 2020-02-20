@@ -5,22 +5,30 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Boyd.DataBuses.Tests
 {
     public class TcpEchoServer : IDisposable
     {
-        private int _listenPort;
-        private TcpListener _listener;
-        private Task _listenTask;
-        private CancellationTokenSource _cancellationTokenSource;
-        private IList<TcpClient> _clients;
+        private readonly int _listenPort;
+        private readonly TcpListener _listener;
+        private readonly Task _listenTask;
+        private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly IList<TcpClient> _clients;
         private volatile bool _serve;
         private volatile bool _isDisposed;
+        private readonly ILogger _logger;
 
-        public TcpEchoServer(int listenPort)
+        public TcpEchoServer(int listenPort, ILoggerFactory loggerFactory)
         {
             _listenPort = listenPort;
+            
+            if (loggerFactory != null)
+            {
+                _logger = loggerFactory.CreateLogger<TcpEchoServer>();
+            }
+
             _listener = new TcpListener(IPAddress.Any, _listenPort);
             _cancellationTokenSource = new CancellationTokenSource();
             _clients = new List<TcpClient>();
@@ -28,6 +36,11 @@ namespace Boyd.DataBuses.Tests
             _listener.Start();
             _listenTask = Listen();
 
+        }
+
+        private void Log(LogLevel level, string message)
+        {
+            _logger?.Log(level, message);
         }
 
         private void EchoClient(TcpClient client)
@@ -72,7 +85,7 @@ namespace Boyd.DataBuses.Tests
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Log(LogLevel.Error, e.Message);
                 }
             }, _cancellationTokenSource.Token);
         }

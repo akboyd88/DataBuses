@@ -8,14 +8,14 @@ namespace Boyd.DataBuses.Impl.Coupler
 {
     internal class Coupling<T> : IDisposable
     {
-        private Task _copyTask;
-        private IDataEgress<T> _egress;
-        private IDataIngress<T> _ingress;
-        private EventWaitHandle _stopEvent;
+        private readonly Task _copyTask;
+        private readonly IDataEgress<T> _egress;
+        private readonly IDataIngress<T> _ingress;
+        private readonly EventWaitHandle _stopEvent;
         private volatile bool _done = false;
         
-        private CancellationToken _cancel;
-        private CancellationTokenSource _taskCancel;
+        private readonly CancellationToken _cancel;
+        private readonly CancellationTokenSource _taskCancel;
         private readonly ILogger _logger;
 
         public Coupling(
@@ -65,7 +65,7 @@ namespace Boyd.DataBuses.Impl.Coupler
                     }
 
                 }
-            });
+            }, _cancel);
         }
         
         public void Dispose()

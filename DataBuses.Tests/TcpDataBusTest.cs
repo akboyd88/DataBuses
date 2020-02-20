@@ -15,7 +15,7 @@ namespace Boyd.DataBuses.Tests
         [Fact]
         public void EchoServerVerification()
         {
-            var echoServer = new TcpEchoServer(25003);
+            var echoServer = new TcpEchoServer(25003, null);
             var tcpClient = new TcpClient("localhost", 25003);
             Assert.True(tcpClient.Connected);
 
@@ -41,7 +41,7 @@ namespace Boyd.DataBuses.Tests
             dOptions.SupplementalSettings["port"] = "25002";
             dOptions.SupplementalSettings["hostname"] = "localhost";
             
-            var echoServer = new TcpEchoServer(25002);
+            var echoServer = new TcpEchoServer(25002, null);
 
             var duplexDatabus = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions);
             

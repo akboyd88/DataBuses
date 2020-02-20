@@ -50,8 +50,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
         protected override void Dispose(bool disposing)
         {
             if (_isDisposed)
-                return; 
-      
+            {
+                return;
+            }
+
             if (disposing) {
                 _isDisposed = true;
                 _serialPort.Close();

@@ -74,8 +74,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed)
-                return; 
-      
+            {
+                return;
+            }
+
             if (disposing) {
                 CleanUpReadTask();
             }

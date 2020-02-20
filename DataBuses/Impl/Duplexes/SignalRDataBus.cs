@@ -78,8 +78,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
         protected override void Dispose(bool disposing)
         {
             if (_isDisposed)
-                return; 
-      
+            {
+                return;
+            }
+
             if (disposing) {
                 _hubConnection.StopAsync().Wait();
                 _hubConnection.DisposeAsync().Wait();

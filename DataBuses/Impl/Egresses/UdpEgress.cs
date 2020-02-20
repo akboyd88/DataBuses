@@ -10,9 +10,9 @@ namespace Boyd.DataBuses.Impl.Egresses
 {
     internal class UdpEgress<T> : BaseEgress<T>
     {
-        private IDeserializer<T> _deserializer;
-        private UdpClient _udpClient;
-        private int _receivePort;
+        private readonly IDeserializer<T> _deserializer;
+        private readonly UdpClient _udpClient;
+        private readonly int _receivePort;
         private volatile bool _isDisposed;
 
 

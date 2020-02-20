@@ -14,10 +14,10 @@ namespace Boyd.DataBuses.Impl.Egresses
         protected readonly EventWaitHandle _readStopEvent;
         private readonly EventWaitHandle _readDataAvailableEvent;
         private volatile bool _isDisposed;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
 
-        public BaseEgress(
+        protected BaseEgress(
             ILoggerFactory loggerFactory)
         {
             if(loggerFactory != null) 

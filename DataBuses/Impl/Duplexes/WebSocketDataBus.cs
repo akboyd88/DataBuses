@@ -68,11 +68,14 @@ namespace Boyd.DataBuses.Impl.Duplexes
         protected override void Dispose(bool disposing)
         {
             if (_isDisposed)
-                return; 
-      
+            {
+                return;
+            }
+
             base.Dispose(disposing);
             
-            if (disposing) {
+            if (disposing) 
+            {
                 CancellationTokenSource cancelSource = new CancellationTokenSource();
                 cancelSource.CancelAfter(250);
                 if (_clientWebSocket.State == WebSocketState.Open ||

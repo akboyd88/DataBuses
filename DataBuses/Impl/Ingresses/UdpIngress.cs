@@ -10,10 +10,10 @@ namespace Boyd.DataBuses.Impl.Ingresses
 {
     internal class UdpIngress<T> : BaseIngress<T>
     {
-        private int _remotePort;
-        private string _remoteHost;
-        private UdpClient _udpClient;
-        private ISerializer<dynamic> _serializer;
+        private readonly int _remotePort;
+        private readonly string _remoteHost;
+        private readonly UdpClient _udpClient;
+        private readonly ISerializer<dynamic> _serializer;
         private volatile bool _isDisposed;
 
         /// <summary>
