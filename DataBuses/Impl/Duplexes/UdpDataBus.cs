@@ -15,13 +15,12 @@ namespace Boyd.DataBuses.Impl.Duplexes
     /// <typeparam name="T2"></typeparam>
     internal class UdpDataBus<T1, T2> : BaseDataBus<T1, T2>
     {
-        private ILogger _logger;
-        private UdpClient _udpClient;
-        private int _receivePort;
-        private string _remoteHost;
-        private int _remotePort;
-        private ISerializer<T1> _serializer;
-        private IDeserializer<T2> _deserializer;
+        private readonly ILogger _logger;
+        private readonly UdpClient _udpClient;
+        private readonly string _remoteHost;
+        private readonly int _remotePort;
+        private readonly ISerializer<T1> _serializer;
+        private readonly IDeserializer<T2> _deserializer;
         private volatile bool _isDisposed;
         
         /// <summary>
@@ -41,10 +40,9 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _deserializer = deserializer;
             _remoteHost = dataBusOptions.SupplementalSettings["remoteHost"];
             _remotePort = int.Parse(dataBusOptions.SupplementalSettings["remotePort"]);
-            _receivePort = int.Parse(dataBusOptions.SupplementalSettings["receivePort"]);
             if(loggerFactory != null)
                 _logger = loggerFactory.CreateLogger<UdpDataBus<T1, T2>>();
-            _udpClient = new UdpClient(_receivePort);
+            _udpClient = new UdpClient(int.Parse(dataBusOptions.SupplementalSettings["receivePort"]));
         }
         
         /// <summary>

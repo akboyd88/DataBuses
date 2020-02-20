@@ -46,7 +46,7 @@ namespace Boyd.DataBuses.Impl.Coupler
                 {
                     try
                     {
-                        var result = WaitHandle.WaitAny(new[] {_stopEvent, _egress.EgressDataAvailableWaitHandle});
+                        var result = WaitHandle.WaitAny(new WaitHandle[] {_stopEvent, _egress.EgressDataAvailableWaitHandle});
                         if (result == 1)
                         {
                             var data = await _egress.TakeData(TimeSpan.FromMilliseconds(250), _cancel);

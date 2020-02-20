@@ -13,14 +13,13 @@ namespace Boyd.DataBuses.Impl.Duplexes
 {
     internal class WebSocketDataBus<T1, T2> : BaseDataBus<T1, T2>
     {
-        private ClientWebSocket _clientWebSocket;
-        private string _wsSocketServerUrl;
-        private string _wsSocketSubProtocol;
-        private IDictionary<string, string> _wsCustomHeaders;
-        private ISerializer<T1> _serializer;
-        private IDeserializer<T2> _deserializer;
-        private int _bufferSize = 4096;
-        private EventWaitHandle _openEvent;
+        private readonly ClientWebSocket _clientWebSocket;
+        private readonly string _wsSocketServerUrl;
+        private readonly IDictionary<string, string> _wsCustomHeaders;
+        private readonly ISerializer<T1> _serializer;
+        private readonly IDeserializer<T2> _deserializer;
+        private const int BUFFER_SIZE = 4096;
+        private readonly EventWaitHandle _openEvent;
 
         private volatile bool _isDisposed;
 
@@ -30,14 +29,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
             ISerializer<T1> serializer,
             IDeserializer<T2> deserializer) : base(options,loggerFactory)
         {
-
             _wsSocketServerUrl = options.SupplementalSettings["url"];
-            _wsSocketSubProtocol = options.SupplementalSettings["subProtocol"];
             _openEvent =new EventWaitHandle(false, EventResetMode.AutoReset);
-
-
             _clientWebSocket = new ClientWebSocket();
-            _clientWebSocket.Options.AddSubProtocol(_wsSocketSubProtocol);
+            _clientWebSocket.Options.AddSubProtocol(options.SupplementalSettings["subProtocol"]);
             _wsCustomHeaders = new Dictionary<string, string>();
             _serializer = serializer;
             _deserializer = deserializer;
@@ -132,7 +127,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
                 
                 while (!token.IsCancellationRequested && !_readStopEvent.WaitOne(0, false))
                 {
-                    var buffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
+                    var buffer = ArrayPool<byte>.Shared.Rent(BUFFER_SIZE);
                     try
                     {
                         var result = await _clientWebSocket.ReceiveAsync(buffer, token);

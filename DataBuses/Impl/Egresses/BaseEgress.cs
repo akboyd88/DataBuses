@@ -88,10 +88,7 @@ namespace Boyd.DataBuses.Impl.Egresses
 
         public event EgressDataAvailableEvt OnEgressDataAvailableEvt;
 
-        public EventWaitHandle EgressDataAvailableWaitHandle
-        {
-            get { return _readDataAvailableEvent; }
-        }
+        public EventWaitHandle EgressDataAvailableWaitHandle => _readDataAvailableEvent;
         public abstract void Dispose();
 
         protected abstract Task CreateReadTask(CancellationToken token);

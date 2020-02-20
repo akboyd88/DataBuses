@@ -31,20 +31,12 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// <summary>
         /// 
         /// </summary>
-        private HubConnection _hubConnection;
-        /// <summary>
-        /// 
-        /// </summary>
-        private string _hubUrl;
+        private readonly HubConnection _hubConnection;
 
         /// <summary>
         /// 
         /// </summary>
-        private string _hubInvokeRecipient;
-        /// <summary>
-        /// 
-        /// </summary>
-        private string _hubInvokeTarget;
+        private readonly string _hubInvokeTarget;
 
         private volatile bool _isDisposed;
 
@@ -56,8 +48,6 @@ namespace Boyd.DataBuses.Impl.Duplexes
         public SignalRDataBus(DataBusOptions options, ILoggerFactory loggerFactory) : base(options, loggerFactory)
         {
 
-            _hubUrl = options.SupplementalSettings["hubUrl"];
-            _hubInvokeRecipient = options.SupplementalSettings["hubInvokeRecipient"];
             _hubInvokeTarget = options.SupplementalSettings["hubInvokeTarget"];
 
             if (options.DataExchangeFormat == SerDerType.MessagePack)
@@ -67,10 +57,10 @@ namespace Boyd.DataBuses.Impl.Duplexes
             
             
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(new Uri(_hubUrl))
+                .WithUrl(new Uri(options.SupplementalSettings["hubUrl"]))
                 .AddJsonProtocol().Build();
 
-            _hubConnection.On<T2>(_hubInvokeRecipient, RecvData);
+            _hubConnection.On<T2>( options.SupplementalSettings["hubInvokeRecipient"], RecvData);
             _hubConnection.StartAsync().Wait();
         }
         

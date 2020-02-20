@@ -12,13 +12,8 @@ namespace Boyd.DataBuses.Impl.Egresses
     {
         private readonly IDeserializer<T> _deserializer;
         private readonly UdpClient _udpClient;
-        private readonly int _receivePort;
         private volatile bool _isDisposed;
-
-
-
-
-
+        
         protected override Task CreateReadTask(CancellationToken token)
         {
             return Task.Run(() =>
@@ -31,7 +26,7 @@ namespace Boyd.DataBuses.Impl.Egresses
                         this.FireEgressDataAvailableEvt();
                     }
                 }
-            });
+            },token);
         }
 
         protected override async Task<T> GetData(TimeSpan pObjTimeout, CancellationToken token)
@@ -57,8 +52,7 @@ namespace Boyd.DataBuses.Impl.Egresses
             ILoggerFactory loggerFactory) : base(loggerFactory)
         {
             _deserializer = deserializer;
-            _receivePort = int.Parse(dataBusOptions.SupplementalSettings["receivePort"]);
-            _udpClient = new UdpClient(_receivePort);
+            _udpClient = new UdpClient(int.Parse(dataBusOptions.SupplementalSettings["receivePort"]));
         }
 
         /// <summary>

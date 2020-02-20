@@ -18,15 +18,14 @@ namespace Boyd.DataBuses.Impl.Duplexes
         private Task _readTask;
         private CancellationTokenSource _readTaskCancelSource;
         protected readonly EventWaitHandle _readStopEvent;
-        private readonly EventWaitHandle _readDataAvailableEvent;
         private volatile bool _isDisposed;
-        private ILogger _logger;
+        private readonly ILogger _logger;
         
         /// <summary>
         /// 
         /// </summary>
         protected BlockingCollection<T2> _messageQueue;
-        protected int? _messageBufferMaxSize;
+        private int? _messageBufferMaxSize;
 
         /// <summary>
         /// Fired when data is available to be taken out of the egress
@@ -37,10 +36,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
         /// Gets a wait handle that can be awaited for the next time data is available to be taken from the
         /// underlying data bus
         /// </summary>
-        public EventWaitHandle EgressDataAvailableWaitHandle
-        {
-            get { return _readDataAvailableEvent; }
-        }
+        public EventWaitHandle EgressDataAvailableWaitHandle { get; }
 
         protected void FireEgressDataAvailableEvt()
         {
@@ -62,7 +58,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
             _messageQueue = _messageBufferMaxSize != null ? new BlockingCollection<T2>(_messageBufferMaxSize.Value) : new BlockingCollection<T2>();
             _readTaskCancelSource = new CancellationTokenSource();
             _readStopEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
-            _readDataAvailableEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
+            EgressDataAvailableWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
         }
 
         public void Dispose()

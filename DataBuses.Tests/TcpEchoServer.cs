@@ -11,7 +11,6 @@ namespace Boyd.DataBuses.Tests
 {
     public class TcpEchoServer : IDisposable
     {
-        private readonly int _listenPort;
         private readonly TcpListener _listener;
         private readonly Task _listenTask;
         private readonly CancellationTokenSource _cancellationTokenSource;
@@ -22,14 +21,13 @@ namespace Boyd.DataBuses.Tests
 
         public TcpEchoServer(int listenPort, ILoggerFactory loggerFactory)
         {
-            _listenPort = listenPort;
             
             if (loggerFactory != null)
             {
                 _logger = loggerFactory.CreateLogger<TcpEchoServer>();
             }
 
-            _listener = new TcpListener(IPAddress.Any, _listenPort);
+            _listener = new TcpListener(IPAddress.Any, listenPort);
             _cancellationTokenSource = new CancellationTokenSource();
             _clients = new List<TcpClient>();
             _serve = true;
