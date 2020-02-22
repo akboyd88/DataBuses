@@ -38,17 +38,17 @@ namespace Boyd.DataBuses.Tests
             await duplexDatabus.PutData(sourceMessage, CancellationToken.None);
             await duplexDatabus.PutData(sourceMessage2, CancellationToken.None);
             
-            var result = duplexDatabus.EgressDataAvailableWaitHandle.WaitOne(TimeSpan.FromMilliseconds(250), false);
+            var result = duplexDatabus.EgressDataAvailableWaitHandle.WaitOne(TimeSpan.FromMilliseconds(500), false);
             Assert.True(result);
-            var recvMessage = await duplexDatabus.TakeData(TimeSpan.FromMilliseconds(250), CancellationToken.None);
+            var recvMessage = await duplexDatabus.TakeData(TimeSpan.FromMilliseconds(500), CancellationToken.None);
             Assert.Equal(sourceMessage.test1, recvMessage.test1);
             Assert.Equal(sourceMessage.test2, recvMessage.test2);
             Assert.Equal(sourceMessage.test3, recvMessage.test3);
             
             
-            var result2 = duplexDatabus.EgressDataAvailableWaitHandle.WaitOne(TimeSpan.FromMilliseconds(250), false);
+            var result2 = duplexDatabus.EgressDataAvailableWaitHandle.WaitOne(TimeSpan.FromMilliseconds(500), false);
             Assert.True(result2);
-            var recvMessage2 = await duplexDatabus.TakeData(TimeSpan.FromMilliseconds(250), CancellationToken.None);
+            var recvMessage2 = await duplexDatabus.TakeData(TimeSpan.FromMilliseconds(500), CancellationToken.None);
             Assert.Equal(sourceMessage2.test1, recvMessage2.test1);
             Assert.Equal(sourceMessage2.test2, recvMessage2.test2);
             Assert.Equal(sourceMessage2.test3, recvMessage2.test3);

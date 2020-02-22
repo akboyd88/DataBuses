@@ -19,7 +19,7 @@ namespace Boyd.DataBuses.Tests
             
             EventWaitHandle dataAvailable = new EventWaitHandle(false, EventResetMode.AutoReset);
             CancellationTokenSource cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromMilliseconds(250));
+            cts.CancelAfter(TimeSpan.FromMilliseconds(1000));
 
             mockEgress.Setup(s => s.EgressDataAvailableWaitHandle).Returns(dataAvailable);
             mockEgress.Setup(s => s.TakeData(It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
@@ -29,7 +29,7 @@ namespace Boyd.DataBuses.Tests
 
             var coupledObj = coupler.CoupleEgressToIngress(mockEgress.Object, mockIngress.Object, null, cts.Token);
             dataAvailable.Set();
-            await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(500),cts.Token).ConfigureAwait(false);
             mockIngress.Verify(s => s.PutData(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             coupledObj.Dispose();
         }

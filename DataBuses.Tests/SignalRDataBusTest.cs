@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace Boyd.DataBuses.Tests
@@ -21,7 +18,7 @@ namespace Boyd.DataBuses.Tests
             var echoServer = new SignalREchoServer("http://127.0.0.1:30002");
             
             CancellationTokenSource cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromMilliseconds(500));
+            cts.CancelAfter(TimeSpan.FromMilliseconds(5000));
             
             HubConnection connection = new HubConnectionBuilder()
                 .WithUrl(new Uri("http://127.0.0.1:30002/echo"))
@@ -30,7 +27,7 @@ namespace Boyd.DataBuses.Tests
 
             var taskCompletionSource = new TaskCompletionSource<byte[]>();
             var cancelCancelSource = new CancellationTokenSource();
-            var timeoutCancelTask = Task.Delay(TimeSpan.FromMilliseconds(1000),cancelCancelSource.Token).ContinueWith(
+            var timeoutCancelTask = Task.Delay(TimeSpan.FromMilliseconds(2000),cancelCancelSource.Token).ContinueWith(
                 (a) =>
                 {
                     taskCompletionSource.SetCanceled();
@@ -57,7 +54,7 @@ namespace Boyd.DataBuses.Tests
             {
                 await timeoutCancelTask.ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
+            catch (TaskCanceledException)
             {
             }
 

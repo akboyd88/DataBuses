@@ -38,16 +38,21 @@ namespace Boyd.DataBuses.Impl.Duplexes
             {
                 return;
             }
+            
+            base.Dispose(disposing);
 
             if (disposing) {
                 _isDisposed = true;
-                _serialPort.Close();
+                if (_serialPort.IsOpen)
+                {
+                    _serialPort.Close();
+                }
+
                 _serialPort.Dispose();
                 _deserializer.Dispose();
             }
 
             _isDisposed = true;
-            base.Dispose(disposing);
         }
 
         protected override Task SendData(T1 data, CancellationToken token)
@@ -55,7 +60,12 @@ namespace Boyd.DataBuses.Impl.Duplexes
             return Task.Run(async () =>
             {
                 var raw = _serializer.Serialize(data);
+                if (!_serialPort.IsOpen)
+                {
+                    _serialPort.Open();
+                }
                 await _serialPort.BaseStream.WriteAsync(raw, token);
+                await _serialPort.BaseStream.FlushAsync(token);
             }, token);
 
         }

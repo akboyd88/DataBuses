@@ -46,7 +46,7 @@ namespace Boyd.DataBuses.Tests
             var duplexDatabus = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions);
             
             var cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromMilliseconds(1000));
+            cts.CancelAfter(TimeSpan.FromMilliseconds(2000));
 
             var sourceMessage = new TestMPackMessage {test1 = 5, test2 = "test", test3 = 5.0};
 
@@ -55,9 +55,9 @@ namespace Boyd.DataBuses.Tests
             
             await duplexDatabus.PutData(sourceMessage, cts.Token);
 
-            var result = duplexDatabus.EgressDataAvailableWaitHandle.WaitOne(TimeSpan.FromMilliseconds(1000), false);
+            var result = duplexDatabus.EgressDataAvailableWaitHandle.WaitOne(TimeSpan.FromMilliseconds(2000), false);
             Assert.True(result);
-            var recvMessage = await duplexDatabus.TakeData(TimeSpan.FromMilliseconds(1000), cts.Token);
+            var recvMessage = await duplexDatabus.TakeData(TimeSpan.FromMilliseconds(2000), cts.Token);
             Assert.Equal(sourceMessage.test1, recvMessage.test1);
             Assert.Equal(sourceMessage.test2, recvMessage.test2);
             Assert.Equal(sourceMessage.test3, recvMessage.test3);

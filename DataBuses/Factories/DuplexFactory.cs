@@ -61,6 +61,14 @@ namespace Boyd.DataBuses.Factories
                         loggerFactory);
                 case DataBusType.Redis:
                 case DataBusType.Serial:
+                    return new SerialDataBus<T1, T2>(
+                        loggerFactory,
+                        SerializerFactory<T1>.Build(
+                            options.DataExchangeFormat,
+                            options.SupplementalSettings),
+                        DeserializerFactory<T2>.Build(
+                            options.DataExchangeFormat,
+                            options.SupplementalSettings), options);
                 default:
                     return null;
             }
