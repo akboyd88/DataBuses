@@ -9,7 +9,7 @@ namespace Boyd.DataBuses.Interfaces
     /// </summary>
     /// <param name="pObjData">The data that was just ingested</param>
     /// <typeparam name="TData">Type of data</typeparam>
-    public delegate void DataIngestedEvt<TData>(TData pObjData);
+    public delegate void DataIngestedEvt<in TData>(TData pObjData);
 
     /// <summary>
     /// Delegate for data commit to underlying bus event

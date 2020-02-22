@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Boyd.DataBuses.Tests
 {
     public class SignalRDataBusTest
     {
+        private readonly ITestOutputHelper _output;
+        public SignalRDataBusTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+        
         [Fact]
         public async Task VerifySignalREchoServer()
         {
@@ -56,6 +64,7 @@ namespace Boyd.DataBuses.Tests
             }
             catch (TaskCanceledException)
             {
+                _output.WriteLine("timeout task cancelled");
             }
 
             await connection.StopAsync(cts.Token);

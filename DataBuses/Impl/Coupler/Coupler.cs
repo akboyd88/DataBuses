@@ -12,7 +12,7 @@ namespace Boyd.DataBuses.Impl.Coupler
         private readonly IDataEgress<T> _egress;
         private readonly IDataIngress<T> _ingress;
         private readonly EventWaitHandle _stopEvent;
-        private volatile bool _done = false;
+        private volatile bool _done;
         
         private readonly CancellationToken _cancel;
         private readonly CancellationTokenSource _taskCancel;

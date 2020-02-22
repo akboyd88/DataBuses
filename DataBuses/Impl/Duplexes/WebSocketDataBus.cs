@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
             foreach (KeyValuePair<string, string> kvp in dict)
             {
                var result =  kvp.Key.Split('.');
-               if (result.Length > 0 && result[0].ToLower() == "header")
+               if (result.Length > 0 && result[0].ToLower(CultureInfo.InvariantCulture) == "header")
                {
                    _wsCustomHeaders[result[1]] = kvp.Key;
                }

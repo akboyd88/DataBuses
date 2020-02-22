@@ -47,7 +47,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
             get { return _messageQueue.Count; }
         }
         
-        internal BaseDataBus(
+        protected BaseDataBus(
             DataBusOptions options,
             ILoggerFactory loggerFactory)
         {

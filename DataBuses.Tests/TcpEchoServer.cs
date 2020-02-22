@@ -103,7 +103,6 @@ namespace Boyd.DataBuses.Tests
             {
                 _cancellationTokenSource.Cancel();
             }
-            _cancellationTokenSource.Dispose();
         }
 
         public void Dispose()
@@ -112,6 +111,7 @@ namespace Boyd.DataBuses.Tests
             {
                 _isDisposed = true;
                 Close();
+                _cancellationTokenSource.Dispose();
             }
         }
     }
