@@ -5,15 +5,18 @@
     <RootNamespace>Boyd.DataBuses</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Boyd.DataBuses</PackageId>
-    <PackageVersion>0.1.0</PackageVersion>
+    <PackageVersion>0.1.0-alpha1</PackageVersion>
     <Title>DataBuses</Title>
-    <Authors>Andrew Boyd</Authors>
+    <Authors>akboyd88</Authors>
     <AssemblyVersion>0.1.0</AssemblyVersion>
     <FileVersion>0.1.0</FileVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Boyd.DataBuses.snk</AssemblyOriginatorKeyFile>
     <PublicSign>true</PublicSign>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PackageProjectUrl>https://github.com/akboyd88/DataBuses/projects/1</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/akboyd88/DataBuses/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/akboyd88/DataBuses</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
