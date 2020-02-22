@@ -38,6 +38,7 @@ jobs:
           name: push to NuGet
           command: |
             cd DataBuses
+            dotnet build --configuration Release
             dotnet pack --output nuget-build --configuration Release
             dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" nuget-build/Boyd.DataBuses*.nupkg
 workflows:
