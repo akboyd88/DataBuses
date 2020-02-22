@@ -25,7 +25,7 @@ jobs:
           command: bash <(curl -s https://codecov.io/bash)
       - run:
           name: upload coverage to codacy
-          command: bash <(curl -Ls https://coverage.codacy.com/get.sh)
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) -r ./DataBuses.Tests/coverage.opencover.xml
   deploy:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.1-bionic
