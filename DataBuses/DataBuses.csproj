@@ -15,7 +15,7 @@
     <PublicSign>true</PublicSign>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageProjectUrl>https://github.com/akboyd88/DataBuses/projects/1</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/akboyd88/DataBuses/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicense>MIT</PackageLicense>
     <RepositoryUrl>https://github.com/akboyd88/DataBuses</RepositoryUrl>
   </PropertyGroup>
 
