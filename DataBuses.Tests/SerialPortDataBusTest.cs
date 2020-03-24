@@ -15,11 +15,17 @@ namespace Boyd.DataBuses.Tests
         [IgnoreWithoutSerialPorts]
         public async Task DuplexE2ENoTransformTest()
         {
+            var serialPort1 = Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_1") != null ? 
+                Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_1") : "/dev/ttyUSB0";
+
+            var serialPort2 = Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_2") != null ? 
+                Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_2") : "/dev/ttyUSB1";
+
             var dOptions1 = new DataBusOptions();
             dOptions1.DataExchangeFormat = SerDerType.MessagePack;
             dOptions1.DatabusType = DataBusType.Serial;
             dOptions1.SupplementalSettings = new Dictionary<string, string>();
-            dOptions1.SupplementalSettings["port"] = "/dev/ttyUSB0";
+            dOptions1.SupplementalSettings["port"] = serialPort1;
             dOptions1.SupplementalSettings["baudRate"] = "9600";
             dOptions1.SupplementalSettings["parity"] = Parity.None.ToString();
             dOptions1.SupplementalSettings["stopBits"] = StopBits.Two.ToString();
@@ -31,7 +37,7 @@ namespace Boyd.DataBuses.Tests
             dOptions2.DataExchangeFormat = SerDerType.MessagePack;
             dOptions2.DatabusType = DataBusType.Serial;
             dOptions2.SupplementalSettings = new Dictionary<string, string>();
-            dOptions2.SupplementalSettings["port"] = "/dev/ttyUSB1";
+            dOptions2.SupplementalSettings["port"] =serialPort2;
             dOptions2.SupplementalSettings["baudRate"] = "9600";
             dOptions2.SupplementalSettings["parity"] = Parity.None.ToString();
             dOptions2.SupplementalSettings["stopBits"] = StopBits.Two.ToString();

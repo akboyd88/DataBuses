@@ -68,7 +68,9 @@ namespace Boyd.DataBuses.Factories
                             options.SupplementalSettings),
                         DeserializerFactory<T2>.Build(
                             options.DataExchangeFormat,
-                            options.SupplementalSettings), options);
+                            options.SupplementalSettings),
+                        SerialPortFactory.Create(options),
+                        options);
                 default:
                     return null;
             }
