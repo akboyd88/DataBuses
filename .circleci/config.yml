@@ -41,6 +41,10 @@ jobs:
             dotnet build --configuration Release
             dotnet pack --output nuget-build --configuration Release
             dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" nuget-build/Boyd.DataBuses*.nupkg
+            cd ../DataBuses.Interfaces
+            dotnet build --configuration Release
+            dotnet pack --output nuget-build --configuration Release
+            dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" nuget-build/Boyd.DataBuses*.nupkg
 workflows:
   version: 2
   untagged-build:
