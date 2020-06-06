@@ -4,6 +4,9 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <AssemblyName>Boyd.DataBuses.Interfaces</AssemblyName>
         <RootNamespace>Boyd.DataBuses.Interfaces</RootNamespace>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>Boyd.DataBuses.snk</AssemblyOriginatorKeyFile>
+        <PublicSign>true</PublicSign>
     </PropertyGroup>
 
     <ItemGroup>
