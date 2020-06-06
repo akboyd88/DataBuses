@@ -20,11 +20,6 @@ jobs:
       - run:
           name: upload coverage to codacy
           command: cd DataBuses.Tests && cp coverage.opencover.xml opencover.xml && bash <(curl -Ls https://coverage.codacy.com/get.sh)
-  deploy:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.1-bionic
-    steps:
-      - checkout
       - run:
           name: restore packages
           command: dotnet restore
@@ -43,6 +38,4 @@ workflows:
   version: 2
   build:
     jobs:
-      - deploy:
-          requires:
-            - build
+      - build
