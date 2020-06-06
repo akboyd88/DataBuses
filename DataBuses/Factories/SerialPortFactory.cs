@@ -22,7 +22,7 @@ namespace Boyd.DataBuses.Factories
     /// <summary>
     /// Create wrapped serial port
     /// </summary>
-    internal class SerialPortFactory : ISerialPortFactory
+    public class SerialPortFactory : ISerialPortFactory
     {
         /// <summary>
         /// Create a serial port that implements ISerialPort

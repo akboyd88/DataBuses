@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataBuses.Interfaces\DataBuses.Interfaces.csproj" />
     <ProjectReference Include="..\DataBuses\DataBuses.csproj" />
   </ItemGroup>
 
