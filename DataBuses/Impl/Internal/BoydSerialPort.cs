@@ -1,8 +1,8 @@
-﻿using Boyd.DataBuses.Interfaces.Internal;
-using Boyd.DataBuses.Models;
+﻿using Boyd.DataBuses.Models;
 using System;
 using System.IO;
 using System.IO.Ports;
+using Boyd.DataBuses.Interfaces.Hardware;
 
 namespace Boyd.DataBuses.Impl.Internal
 {
@@ -25,7 +25,7 @@ namespace Boyd.DataBuses.Impl.Internal
 
         public bool IsOpen => _serialPort.IsOpen;
 
-        public int BytesToRead => _serialPort.BytesToRead;
+        public long BytesToRead => _serialPort.BytesToRead;
 
         public void Close()
         {

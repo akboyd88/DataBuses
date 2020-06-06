@@ -10,15 +10,26 @@ namespace Boyd.DataBuses.Factories
     /// </summary>
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
-    public static class DuplexFactory<T1, T2>
+    public class DuplexFactory<T1, T2>
     {
+        private readonly ISerialPortFactory _serialPortFactory;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serialPortFactory"></param>
+        public DuplexFactory(ISerialPortFactory serialPortFactory)
+        {
+            _serialPortFactory = serialPortFactory;
+        }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="options"></param>
         /// <param name="loggerFactory"></param>
         /// <returns></returns>
-        public static IDataDuplex<T1, T2> Build(
+        public IDataDuplex<T1, T2> Build(
             DataBusOptions options, 
             ILoggerFactory loggerFactory = null
         )
@@ -59,7 +70,14 @@ namespace Boyd.DataBuses.Factories
                     return new SignalRDataBus<T1, T2>(
                         options,
                         loggerFactory);
+                case DataBusType.MQTT:
+                    return new MQTTDataBus<T1, T2>(
+                        loggerFactory,
+                        options,
+                        SerializerFactory<T1>.Build(options.DataExchangeFormat, options.SupplementalSettings),
+                        DeserializerFactory<T2>.Build(options.DataExchangeFormat, options.SupplementalSettings));
                 case DataBusType.Redis:
+                    return null;
                 case DataBusType.Serial:
                     return new SerialDataBus<T1, T2>(
                         loggerFactory,
@@ -69,7 +87,7 @@ namespace Boyd.DataBuses.Factories
                         DeserializerFactory<T2>.Build(
                             options.DataExchangeFormat,
                             options.SupplementalSettings),
-                        SerialPortFactory.Create(options),
+                        _serialPortFactory.Create(options),
                         options);
                 default:
                     return null;

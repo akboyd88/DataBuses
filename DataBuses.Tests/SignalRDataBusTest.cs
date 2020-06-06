@@ -7,6 +7,7 @@ using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -87,7 +88,9 @@ namespace Boyd.DataBuses.Tests
             var echoServer = new SignalREchoServer("http://127.0.0.1:30003");
 
 
-            var duplexDatabus = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions);
+            var mockedSerialPortfactory = new Mock<ISerialPortFactory>();
+            var duplexFactory = new DuplexFactory<TestMPackMessage, TestMPackMessage>(mockedSerialPortfactory.Object);
+            var duplexDatabus = duplexFactory.Build(dOptions);
             
             var sourceMessage = new TestMPackMessage();
             sourceMessage.test1 = 5;

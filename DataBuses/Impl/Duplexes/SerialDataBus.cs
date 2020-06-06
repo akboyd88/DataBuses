@@ -1,9 +1,8 @@
 ﻿using System;
-using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Interfaces;
-using Boyd.DataBuses.Interfaces.Internal;
+using Boyd.DataBuses.Interfaces.Hardware;
 using Boyd.DataBuses.Models;
 using Microsoft.Extensions.Logging;
 

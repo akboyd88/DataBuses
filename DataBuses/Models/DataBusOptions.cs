@@ -49,7 +49,11 @@ namespace Boyd.DataBuses.Models
         /// <summary>
         /// Not yet supported but uses Redis Publish Subscribe functionality to use a topic as a data bus
         /// </summary>
-        Redis
+        Redis,
+        /// <summary>
+        /// MQ Telemetry Transport
+        /// </summary>
+        MQTT
 
     }
     
