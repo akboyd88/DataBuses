@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
 using MessagePack;
+using Moq;
 using Xunit;
 
 namespace Boyd.DataBuses.Tests
@@ -22,7 +23,9 @@ namespace Boyd.DataBuses.Tests
             dOptions.SupplementalSettings["remotePort"] = "25000";
             dOptions.SupplementalSettings["remoteHost"] = "localhost";
 
-            var duplexDatabus = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions);
+            var mockedSerialPortfactory = new Mock<ISerialPortFactory>();
+            var duplexFactory = new DuplexFactory<TestMPackMessage, TestMPackMessage>(mockedSerialPortfactory.Object);
+            var duplexDatabus = duplexFactory.Build(dOptions);
             
             var sourceMessage = new TestMPackMessage();
             sourceMessage.test1 = 5;

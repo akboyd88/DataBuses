@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Interfaces;
+using Boyd.DataBuses.Interfaces.Hardware;
 using Boyd.DataBuses.Models;
 using Microsoft.Extensions.Logging;
 
@@ -10,7 +10,7 @@ namespace Boyd.DataBuses.Impl.Duplexes
 {
     internal class SerialDataBus<T1, T2> : BaseDataBus<T1, T2>
     {
-        private readonly SerialPort _serialPort;
+        private readonly ISerialPort _serialPort;
         private readonly ISerializer<T1> _serializer;
         private readonly IDeserializer<T2> _deserializer;
         private volatile bool _isDisposed;
@@ -19,17 +19,13 @@ namespace Boyd.DataBuses.Impl.Duplexes
             ILoggerFactory loggerFactory, 
             ISerializer<T1> pSerializer,
             IDeserializer<T2> pDeserializer,
+            ISerialPort pSerialPort,
             DataBusOptions options) : base(options, loggerFactory)
         {
             _deserializer = pDeserializer;
             _serializer = pSerializer;
+            _serialPort = pSerialPort;
 
-            _serialPort = new SerialPort(
-                options.SupplementalSettings["port"], 
-                int.Parse(options.SupplementalSettings["baudRate"]), 
-                Enum.Parse<Parity>(options.SupplementalSettings["parity"]), 
-                int.Parse(options.SupplementalSettings["dataBits"]), 
-                Enum.Parse<StopBits>(options.SupplementalSettings["stopBits"]));
         }
 
         protected override void Dispose(bool disposing)

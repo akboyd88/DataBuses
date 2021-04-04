@@ -30,15 +30,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Boyd.DataBuses.Interfaces" Version="0.1.0-alpha3-g062bc00b2f" />
     <PackageReference Include="MessagePack" Version="2.1.90" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.1" />
+    <PackageReference Include="MQTTnet" Version="3.0.11" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.1.91" />
     <PackageReference Include="System.IO.Ports" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Impl\Multiplexers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataBuses.Interfaces\DataBuses.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

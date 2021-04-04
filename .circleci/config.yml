@@ -1,9 +1,3 @@
-only-deploy-tags: &only-deploy-tags
-  filters:
-    tags:
-      only: /^v.*/
-    branches:
-      ignore: /.*/
 version: 2.1
 jobs: 
   build:
@@ -26,11 +20,6 @@ jobs:
       - run:
           name: upload coverage to codacy
           command: cd DataBuses.Tests && cp coverage.opencover.xml opencover.xml && bash <(curl -Ls https://coverage.codacy.com/get.sh)
-  deploy:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.1-bionic
-    steps:
-      - checkout
       - run:
           name: restore packages
           command: dotnet restore
@@ -41,19 +30,12 @@ jobs:
             dotnet build --configuration Release
             dotnet pack --output nuget-build --configuration Release
             dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" nuget-build/Boyd.DataBuses*.nupkg
+            cd ../DataBuses.Interfaces
+            dotnet build --configuration Release
+            dotnet pack --output nuget-build --configuration Release
+            dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" nuget-build/Boyd.DataBuses*.nupkg
 workflows:
   version: 2
-  untagged-build:
+  build:
     jobs:
       - build
-  tagged-build:
-    jobs:
-      - build: *only-deploy-tags
-      - deploy:
-          <<: *only-deploy-tags
-          requires:
-            - build
-
-
-      
-

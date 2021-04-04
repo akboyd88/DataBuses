@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
+using Moq;
 using Xunit;
 
 namespace Boyd.DataBuses.Tests
@@ -15,29 +16,40 @@ namespace Boyd.DataBuses.Tests
         [IgnoreWithoutSerialPorts]
         public async Task DuplexE2ENoTransformTest()
         {
+            var serialPort1 = Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_1") != null ? 
+                Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_1") : "/dev/ttyUSB0";
+
+            var serialPort2 = Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_2") != null ? 
+                Environment.GetEnvironmentVariable("TEST_SERIAL_PORT_2") : "/dev/ttyUSB1";
+
             var dOptions1 = new DataBusOptions();
             dOptions1.DataExchangeFormat = SerDerType.MessagePack;
             dOptions1.DatabusType = DataBusType.Serial;
             dOptions1.SupplementalSettings = new Dictionary<string, string>();
-            dOptions1.SupplementalSettings["port"] = "/dev/ttyUSB0";
+            dOptions1.SupplementalSettings["port"] = serialPort1;
             dOptions1.SupplementalSettings["baudRate"] = "9600";
             dOptions1.SupplementalSettings["parity"] = Parity.None.ToString();
             dOptions1.SupplementalSettings["stopBits"] = StopBits.Two.ToString();
             dOptions1.SupplementalSettings["dataBits"] = "8";
 
-            var duplexDatabus1 = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions1);
+            var mockedSerialPortfactory = new Mock<ISerialPortFactory>();
+            mockedSerialPortfactory.Setup(a => a.Create(It.IsAny<DataBusOptions>()))
+                .Returns(new TestSerialPort());
+            
+            var duplexFactory = new DuplexFactory<TestMPackMessage, TestMPackMessage>(mockedSerialPortfactory.Object);
+            var duplexDatabus1 = duplexFactory.Build(dOptions1);
             
             var dOptions2 = new DataBusOptions();
             dOptions2.DataExchangeFormat = SerDerType.MessagePack;
             dOptions2.DatabusType = DataBusType.Serial;
             dOptions2.SupplementalSettings = new Dictionary<string, string>();
-            dOptions2.SupplementalSettings["port"] = "/dev/ttyUSB1";
+            dOptions2.SupplementalSettings["port"] =serialPort2;
             dOptions2.SupplementalSettings["baudRate"] = "9600";
             dOptions2.SupplementalSettings["parity"] = Parity.None.ToString();
             dOptions2.SupplementalSettings["stopBits"] = StopBits.Two.ToString();
             dOptions2.SupplementalSettings["dataBits"] = "8";
 
-            var duplexDatabus2 = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions2);
+            var duplexDatabus2 = duplexFactory.Build(dOptions2);
             duplexDatabus2.StartReading();
             
             var cts = new CancellationTokenSource();

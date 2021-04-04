@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
+using Moq;
 using Xunit;
 
 namespace Boyd.DataBuses.Tests
@@ -46,9 +47,10 @@ namespace Boyd.DataBuses.Tests
             dOptions.SupplementalSettings["maxBufferedMessages"] = "10";
             
             var wssv = new WebSocketEchoServer("http://127.0.0.1:30000");
-
-
-            var duplexDatabus = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions);
+            
+            var mockedSerialPortfactory = new Mock<ISerialPortFactory>();
+            var duplexFactory = new DuplexFactory<TestMPackMessage, TestMPackMessage>(mockedSerialPortfactory.Object);
+            var duplexDatabus = duplexFactory.Build(dOptions);
             
             var sourceMessage = new TestMPackMessage();
             sourceMessage.test1 = 5;

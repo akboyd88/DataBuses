@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Boyd.DataBuses.Factories;
 using Boyd.DataBuses.Models;
+using Moq;
 using Xunit;
 
 namespace Boyd.DataBuses.Tests
@@ -43,7 +44,10 @@ namespace Boyd.DataBuses.Tests
             
             var echoServer = new TcpEchoServer(25002, null);
 
-            var duplexDatabus = DuplexFactory<TestMPackMessage,TestMPackMessage>.Build(dOptions);
+            var mockedSerialPortfactory = new Mock<ISerialPortFactory>();
+            var duplexFactory = new DuplexFactory<TestMPackMessage, TestMPackMessage>(mockedSerialPortfactory.Object);
+            
+            var duplexDatabus = duplexFactory.Build(dOptions);
             
             var cts = new CancellationTokenSource();
             cts.CancelAfter(TimeSpan.FromMilliseconds(2000));
